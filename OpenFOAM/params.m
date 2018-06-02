@@ -1,0 +1,15 @@
+gamma = 4/3;
+M1 = 5;
+Min = sqrt((2+(gamma-1)*M1^2)/(2*gamma*M1^2-gamma+1));
+cin = 1;
+vin = -Min*cin;
+v1 = vin*(gamma+1)*M1^2/(2+(gamma-1)*M1^2);
+c1 = -v1/M1;
+rhoin = 1;
+rho1 = rhoin*vin/v1;
+pin = 0.75;
+p1 = rho1*c1^2/gamma;
+R = 5/7;
+Cv = R/(gamma-1);
+Tin = cin^2/(gamma*R);
+T1 = c1^2/(gamma*R);

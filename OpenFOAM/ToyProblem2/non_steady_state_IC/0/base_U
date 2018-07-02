@@ -1,0 +1,70 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1712                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    location    "0";
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+
+internalField   uniform (0 -1 0);
+
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform (0 -2.228079401215960 0);
+    }
+    outlet
+    {
+        type            groovyBC;
+        value           uniform (0 -0.394688351072542 0);
+        variables (
+            "eps=1e-3;"
+            "Lx=4.0;"
+            "H=1.0;"
+            "gamma=4.0/3.0;"
+            "M1=5.0;"
+            "cin=1.0;"
+            "kx=2*pi/Lx;"
+            "Min=sqrt((2+(gamma-1)*M1*M1)/(2*gamma*M1*M1-gamma+1));"
+            "vin=-Min*cin;"
+            "tacc=H/mag(vin)/(1-Min);"
+            "omega0=4*pi/tacc;"
+            "mu=sqrt(1.0 - pow(kx*cin/omega0,2)*(1 - Min*Min));"
+            "sinusoid=eps*cos(-omega0*time()+kx*pos().x);"
+            "dUx=kx*cin*cin/omega0*sinusoid;"
+            "dUy=(mu+Min)/(1-Min*Min)*cin*sinusoid;"
+            "val=vector(dUx, dUy - 0.394688351072542, 0);"
+        );
+        valueExpression "val";
+    }
+    left
+    {
+        type            cyclic;
+    }
+    right
+    {
+        type            cyclic;
+    }
+    frontAndBack
+    {
+        type            empty;
+    }
+}
+
+
+// ************************************************************************* //

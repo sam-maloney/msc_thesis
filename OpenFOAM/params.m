@@ -13,3 +13,5 @@ R = 5/7;
 Cv = R/(gamma-1);
 Tin = cin^2/(gamma*R);
 T1 = c1^2/(gamma*R);
+H = 1;
+tacc = H/abs(vin)/(1-Min);

@@ -1,0 +1,4 @@
+foamCleanPolyMesh
+blockMesh
+./copyFields
+setFields

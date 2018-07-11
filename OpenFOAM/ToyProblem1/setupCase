@@ -1,9 +1,0 @@
-#!/bin/bash
-foamCleanPolyMesh
-blockMesh
-./copyFields
-prec="$(grep writePrecision ./system/controlDict)"
-prec="${prec:16:-1}"
-sed -i -e "s/writePrecision  ${prec//$'\r'}/writePrecision  15/g" ./system/controlDict
-setFields
-sed -i -e "s/writePrecision  15/writePrecision  ${prec//$'\r'}/g" ./system/controlDict

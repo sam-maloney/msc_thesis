@@ -82,4 +82,5 @@ build/
 # open foam results and libraries
 [1-9]*/
 0.*/
-Sam-v1712/
+processor*/
+interpolation/

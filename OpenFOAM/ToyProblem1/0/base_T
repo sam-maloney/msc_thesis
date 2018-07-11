@@ -18,7 +18,7 @@ FoamFile
 dimensions      [0 0 0 1 0 0 0];
 
 
-internalField   uniform 1; 
+internalField   uniform 1.05; 
 
 
 boundaryField
@@ -26,12 +26,17 @@ boundaryField
     inlet
     {
         type            fixedValue;
-        value           uniform 0.208502188361161;
+        value           uniform 1.05;
     }
     outlet
     {
-        type            fixedValue;
-        value           uniform 1.05;
+//        type            advective;
+//        phi             phi;
+//        rho	            rho;
+//        fieldInf	      1.05;
+//        lInf	          4;
+//        value           uniform 1.05;
+        type            zeroGradient;
     }
     left
     {

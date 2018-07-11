@@ -4,4 +4,3 @@ do
     newname="$(echo "$name" | cut -c6-)"
     cp "$name" "$newname"
 done
-

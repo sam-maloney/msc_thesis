@@ -1,0 +1,3 @@
+myDbnsFoam.C
+
+EXE = $(FOAM_APPBIN)/myDbnsFoam

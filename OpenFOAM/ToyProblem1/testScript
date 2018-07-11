@@ -1,9 +1,0 @@
-#!/bin/bash
-initial="$(grep writePrecision ./system/controlDict)"
-initial="${initial:16:-2}"
-initial="${initial//$'\r'}"
-printf "test=%q\n" "$initial"
-echo "$initial"
-str1="s/writePrecision  ${initial//$'\r'}/writePrecision  15/g"
-printf "test=%q\n" "$str1"
-echo "$str1"

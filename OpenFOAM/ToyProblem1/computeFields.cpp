@@ -69,12 +69,6 @@ int main(int argc, char** argv)
   writeFooter(  TFile, "1.05", "zeroGradient;");
   writeFooter(  UFile, "(0 -0.394688351072542 0)", "zeroGradient;");
   writeFooter(  pFile, "0.75", "zeroGradient;");
-//  writeFooter(  pFile, "0.75", std::string("advective;\n") +
-//                               "        phi             phi;\n" +
-//                               "        rho	            rho;\n" +
-//                               "        fieldInf	      2.37037037037037;\n" +
-//                               "        lInf	          4;\n" +
-//                               "        value           uniform 2.37037037037037;");
 
   PhiFile.close();
   rhoFile.close();
@@ -104,9 +98,9 @@ void writeHeader(std::fstream& file, std::string name, std::string type,
 {
   file << "/*--------------------------------*- C++ -*----------------------------------*\\\n"
        << "| =========                 |                                                 |\n"
-       << "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n"
-       << "|  \\\\    /   O peration     | Version:  v1712                                 |\n"
-       << "|   \\\\  /    A nd           | Web:      www.OpenFOAM.com                      |\n"
+       << "| \\\\      /  F ield         | foam-extend: Open Source CFD                    |\n"
+       << "|  \\\\    /   O peration     | Version:     4.0                                |\n"
+       << "|   \\\\  /    A nd           | Web:         http://www.foam-extend.org         |\n"
        << "|    \\\\/     M anipulation  |                                                 |\n"
        << "\\*---------------------------------------------------------------------------*/\n"
        << "FoamFile\n"
@@ -114,13 +108,11 @@ void writeHeader(std::fstream& file, std::string name, std::string type,
        << "    version     2.0;\n"
        << "    format      ascii;\n"
        << "    class       vol" << type << "Field;\n"
-       << "    location    \"0\";\n"
        << "    object      " << name << ";\n"
        << "}\n"
        << "// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //\n"
        << "\n"
        << "dimensions      [" << mass << " " << length << " " << time << " " << temp << " 0 0 0];\n"
-       << "\n"
        << "\n";
   type[0] = std::tolower(type[0]);
   file << "internalField   nonuniform List<" << type << "> \n"
@@ -144,15 +136,11 @@ void writeFooter(std::fstream& file, std::string inVal, std::string outBC)
        << "    {\n"
        << "        type            " << outBC << "\n"
        << "    }\n"
-       << "    left\n"
+       << "    sides\n"
        << "    {\n"
-       << "        type            empty;\n"
+       << "        type            cyclic;\n"
        << "    }\n"
-       << "    right\n"
-       << "    {\n"
-       << "        type            empty;\n"
-       << "    }\n"
-       << "    frontAndBack\n"
+       << "    defaultFaces\n"
        << "    {\n"
        << "        type            empty;\n"
        << "    }\n"

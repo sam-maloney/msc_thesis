@@ -101,9 +101,6 @@ int main(int argc, char *argv[])
               + rho*fvc::grad(potential)
             );
 
-//            int a = rhoU.dummy_error();
-//            int b = fvc::grad(potential).dummy_error();
-
             solve
             (
                 1.0/beta[i]*fvm::ddt(rhoE)

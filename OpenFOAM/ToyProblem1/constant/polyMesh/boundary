@@ -15,37 +15,32 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
+4
 (
     inlet
     {
         type            patch;
-        nFaces          1;
-        startFace       999;
+        nFaces          400;
+        startFace       319200;
     }
     outlet
     {
         type            patch;
-        nFaces          1;
-        startFace       1000;
+        nFaces          400;
+        startFace       319600;
     }
-    left
+    sides
+    {
+        type            cyclic;
+        nFaces          800;
+        startFace       320000;
+        featureCos      0.9;
+    }
+    defaultFaces
     {
         type            empty;
-        nFaces          1000;
-        startFace       1001;
-    }
-    right
-    {
-        type            empty;
-        nFaces          1000;
-        startFace       2001;
-    }
-    frontAndBack
-    {
-        type            empty;
-        nFaces          2000;
-        startFace       3001;
+        nFaces          320000;
+        startFace       320800;
     }
 )
 

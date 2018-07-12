@@ -1,3 +1,3 @@
 #!/bin/bash
 decomposePar -force
-mpirun -np 8 mySonicFoam -parallel > log
+mpirun -np 8 myDbnsFoam -parallel > log

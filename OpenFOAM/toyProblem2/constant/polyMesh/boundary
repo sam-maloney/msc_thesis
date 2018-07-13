@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v1712                                 |
-|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
+4
 (
     inlet
     {
@@ -29,35 +29,20 @@ FoamFile
         nFaces          400;
         startFace       319600;
     }
-    left
+    sides
     {
         type            cyclic;
-        inGroups        1(cyclic);
-        nFaces          400;
+        nFaces          800;
         startFace       320000;
-        matchTolerance  0.0001;
-        transform       translational;
-        neighbourPatch  right;
-        separationVector (4 0 0);
+        featureCos      0.9;
     }
-    right
-    {
-        type            cyclic;
-        inGroups        1(cyclic);
-        nFaces          400;
-        startFace       320400;
-        matchTolerance  0.0001;
-        transform       translational;
-        neighbourPatch  left;
-        separationVector (-4 0 0);
-    }
-    frontAndBack
+    defaultFaces
     {
         type            empty;
-        inGroups        1(empty);
         nFaces          320000;
         startFace       320800;
     }
 )
+
 
 // ************************************************************************* //

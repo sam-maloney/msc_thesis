@@ -1,4 +1,0 @@
-foamCleanPolyMesh
-blockMesh
-./copyFields
-setFields

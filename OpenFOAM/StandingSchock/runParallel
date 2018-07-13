@@ -1,3 +1,0 @@
-#!/bin/bash
-decomposePar
-mpirun -np 8 sonicFoam -parallel > log

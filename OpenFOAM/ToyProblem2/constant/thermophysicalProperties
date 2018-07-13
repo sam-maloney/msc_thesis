@@ -1,8 +1,8 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  plus                                  |
-|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
@@ -10,42 +10,14 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
     object      thermophysicalProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-thermoType
-{
-    type            hePsiThermo;
-    mixture         pureMixture;
-    transport       const;
-    thermo          eConst;
-    equationOfState perfectGas;
-    specie          specie;
-    energy          sensibleInternalEnergy;
-}
+thermoType      hPsiThermo<pureMixture<constTransport<specieThermo<hConstThermo<perfectGas>>>>>;
 
-// Note: these are the properties for a "normalised" inviscid gas
-//       for which the speed of sound is 1 m/s at a temperature of 1.05K
-//       and gamma = 4/3
-mixture
-{
-    specie
-    {
-        molWeight       11640.3;
-    }
-    thermodynamics
-    {
-        Cv              2.142857142857143;
-        Hf              0;
-    }
-    transport
-    {
-        mu              0;
-        Pr              1;
-    }
-}
+//              name, nMoles, mol_weight,      Cp,               Hf, mu, Pr;
+mixture         air   1       11640.2561438975 2.857142857142857 0   0   1;
 
 
 // ************************************************************************* //

@@ -29,6 +29,7 @@ processor*
 !*/polyMesh/blockMeshDict
 cellToRegion*
 log*
+results/*
 
 # packages - anywhere
 

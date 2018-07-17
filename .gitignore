@@ -84,3 +84,6 @@ build/
 0.*/
 processor*/
 interpolation/
+
+# MATLAB temp files
+*.asv

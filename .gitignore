@@ -83,7 +83,10 @@ build/
 [1-9]*/
 0.*/
 processor*/
-interpolation/
+log
 
 # MATLAB temp files
 *.asv
+
+# foam-extend source code
+foam/

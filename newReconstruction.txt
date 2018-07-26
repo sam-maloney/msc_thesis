@@ -1,0 +1,50 @@
+Steps for creating a new "well-balanced" reconstruction scheme in foam-extend:ls 
+
+done 1. Create a new limiter class balancedPotentialLimiter
+done    Source should be located in src/dbns/limiter
+done    This is just a dummy class to use for template specializtion of numericFlux
+done    Simply inherit from firstOrderLimiter
+done    Add symlink to header in src/dbns/lnInclude using absolute path-to-file
+
+done 2. Add new limiter to runtime selection table
+done    Add to macro makeBasicNumericFluxForAllLimiters in numericFluxes.C
+done    Need to include the header file in the following sources:
+done      src/dbns/limiter/MDLimiter.H
+done      src/dbns/numericFlux/numericFluxes.C
+
+done 3. Create a partial specialization of the numericFlux class
+done    Template class Limiter should now be specialized to balancedPotentialLimiter
+done    Use source files balancedNumericFlux.[CH] and #include in the regular files
+done    Contains an additional member for the external potential field
+
+done 4. Overload the Foam::basicNumericFlux::New(...) function
+done    The overload will also take the potential field as an input
+done    Need to add overloaded prototype to basicNumericFlux.H file as well
+done    Based on the Limiter dictionary value, will select correct numericFlux class
+done    Change specialized numericFlux constructor to take potential
+done    Regular numericFlux constructor must also take (and ignore) a potential
+
+done 5. In the specialized numericFlux class, rewrite the computeFlux() member
+done    Compute Bernoulli constant at cell centres
+done    Interpolate potential at the cell faces
+done    Compute rho at the cell face using Newton's Method
+done    Directly compute remaining variables and pass to evaluateFlux(...)
+
+
+   
+Modified Files:
+  src/dbns/numericFlux/numericFluxes.C
+  src/dbns/numericFlux/numericFlux.H
+  src/dbns/numericFlux/numericFlux.C
+  src/dbns/basicNumericFlux/newBasicNumericFlux.C
+  src/dbns/limiter/MDLimiter.H
+   
+New Files:
+  src/dbns/limiter/balancedPotentialLimiter.H
+  src/dbns/numericFlux/balancedNumericFlux.H
+  src/dbns/numericFlux/balancedNumericFlux.C
+
+New Symlinks (in lnInclude directory):
+  balancedPotentialLimiter.H
+  balancedNumericFlux.H
+  balancedNumericFlux.C

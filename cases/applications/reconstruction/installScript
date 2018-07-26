@@ -1,0 +1,20 @@
+#!/bin/bash
+read -p "This will overwrite files in $FOAM_SRC/dbns/, do you wish to continure (y/n)? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    # copy modified files; originals will be overwritten
+    cp ./modified/MDLimiter.H $FOAM_SRC/dbns/limiter/
+    cp ./modified/newBasicNumericFlux.C $FOAM_SRC/dbns/basicNumericFlux/
+    cp ./modified/numericFluxes.C $FOAM_SRC/dbns/numericFlux/
+    cp ./modified/numericFlux.C $FOAM_SRC/dbns/numericFlux/
+    cp ./modified/numericFlux.H $FOAM_SRC/dbns/numericFlux/
+    # copy new files
+    cp ./new/balancedNumericFlux.C $FOAM_SRC/dbns/numericFlux/
+    cp ./new/balancedNumericFlux.H $FOAM_SRC/dbns/numericFlux/
+    cp ./new/balancedPotentialLimiter.H $FOAM_SRC/dbns/limiter/
+    # create symlinks to new files in include directory
+    ln -s ../numericFlux/balancedNumericFlux.C $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.C
+    ln -s ../numericFlux/balancedNumericFlux.H $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.H
+    ln -s ../limiter/balancedPotentialLimiter.H $FOAM_SRC/dbns/lnInclude/balancedPotentialLimiter.H
+fi

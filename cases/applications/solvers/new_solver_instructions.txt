@@ -1,0 +1,21 @@
+Create new solver modifying solver dbnsFoam. Copy solver dbnsFoam e.g. to directory applications/solvers in your work directory: # cd $WM_PROJECT_USER_DIR 
+# mkdir applications 
+# cd applications 
+# mkdir solvers 
+# cd solvers 
+# cp -r $FOAM_APP/solvers/compressible/dbnsFoam/ ./
+
+Rename copied solver e.g.: 
+# mv dbnsFoam dbnsPotentialFoam 
+
+Rename source file dbnsFoam.C Replace word dbnsFoam with word dbnsPotentialFoam everywhere in source code Replace words also in files in directory Make:
+# cd dbnsPotentialFoam 
+# mv dbnsFoam.C dbnsPotentialFoam.C 
+# sed -i 's/dbnsFoam/dbnsPotentialFoam/g' Make/files 
+# sed -i 's/dbnsFoam/dbnsPotentialFoam/g' dbnsPotentialFoam.C
+
+In file files change binary file path from $FOAM_APPBIN to $FOAM_USER_APPBIN Remove useless files:
+# rm dbnsFoam.dep
+
+Compile solver before doing any changes to make sure it is prepared for implementation: 
+# wmake

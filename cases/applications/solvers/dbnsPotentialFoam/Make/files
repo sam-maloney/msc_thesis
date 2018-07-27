@@ -1,0 +1,3 @@
+dbnsPotentialFoam.C
+
+EXE = $(FOAM_APPBIN)/dbnsPotentialFoam

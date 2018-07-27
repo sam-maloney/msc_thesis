@@ -18,6 +18,7 @@ solvers
 {
     rho
     {
+        // Used only by the balancedPotentialLimiter
         solver          Newton;
         tolerance       2e-15;
     }

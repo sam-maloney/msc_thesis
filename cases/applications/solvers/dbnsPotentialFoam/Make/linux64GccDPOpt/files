@@ -51,6 +51,6 @@
 
 # 2 "<command-line>" 2
 # 1 "files"
-myDbnsFoam.C
+dbnsPotentialFoam.C
 
-EXE = $(FOAM_APPBIN)/myDbnsFoam
+EXE = $(FOAM_APPBIN)/dbnsPotentialFoam

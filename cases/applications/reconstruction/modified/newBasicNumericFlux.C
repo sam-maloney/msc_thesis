@@ -41,7 +41,15 @@ Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
     word name = word(subDict.lookup("flux")) + "Flux"
         + word(subDict.lookup("limiter")) + "Limiter";
 
-    Info<< "Selecting numericFlux " << name << endl;
+    if (word(subDict.lookup("limiter")) == "balancedPotential")
+    {
+        FatalErrorIn("basicNumericFlux::New(const fvMesh&)")
+            << "balancedPotentialLimiter can only be paired with a solver that" << nl
+            << "uses an external potential field (such as dbnsPotentialFoam)"
+            << exit(FatalError);
+    }
+
+    Info << "Selecting numericFlux " << name << endl;
 
     stateConstructorTable::iterator cstrIter =
         stateConstructorTablePtr_->find(name);
@@ -55,9 +63,8 @@ Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
             << exit(FatalError);
     }
 
-    const volScalarField potential = volScalarField::null();
-
-    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, potential, thermo));
+    // Use p as a dummy placeholder for potential, which will be ignored anyways
+    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, p, thermo));
 }
 
 
@@ -76,7 +83,7 @@ Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
     word name = word(subDict.lookup("flux")) + "Flux"
         + word(subDict.lookup("limiter")) + "Limiter";
 
-    Info<< "Selecting numericFlux " << name << endl;
+    Info << "Selecting numericFlux " << name << endl;
 
     stateConstructorTable::iterator cstrIter =
         stateConstructorTablePtr_->find(name);

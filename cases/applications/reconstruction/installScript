@@ -17,4 +17,5 @@ then
     ln -s ../numericFlux/balancedNumericFlux.C $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.C
     ln -s ../numericFlux/balancedNumericFlux.H $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.H
     ln -s ../limiter/balancedPotentialLimiter.H $FOAM_SRC/dbns/lnInclude/balancedPotentialLimiter.H
+    echo "Files coped. Now run Allwmake script in $FOAM_SRC parent directory"
 fi

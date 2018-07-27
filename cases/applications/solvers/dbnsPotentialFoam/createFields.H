@@ -88,6 +88,7 @@
         p,
         U,
         T,
+        potential,
         thermo()
     );
     basicNumericFlux& dbnsFlux = dbnsFluxPtr();

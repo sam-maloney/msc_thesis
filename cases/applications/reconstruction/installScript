@@ -5,6 +5,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
     # copy modified files; originals will be overwritten
     cp ./modified/MDLimiter.H $FOAM_SRC/dbns/limiter/
+    cp ./modified/basicNumericFlux.H $FOAM_SRC/dbns/basicNumericFlux/
     cp ./modified/newBasicNumericFlux.C $FOAM_SRC/dbns/basicNumericFlux/
     cp ./modified/numericFluxes.C $FOAM_SRC/dbns/numericFlux/
     cp ./modified/numericFlux.C $FOAM_SRC/dbns/numericFlux/
@@ -17,5 +18,5 @@ then
     ln -s ../numericFlux/balancedNumericFlux.C $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.C
     ln -s ../numericFlux/balancedNumericFlux.H $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.H
     ln -s ../limiter/balancedPotentialLimiter.H $FOAM_SRC/dbns/lnInclude/balancedPotentialLimiter.H
-    echo "Files coped. Now run Allwmake script in $FOAM_SRC parent directory"
+    echo "Files copied. Now run the Allwmake script in parent directory of $FOAM_SRC"
 fi

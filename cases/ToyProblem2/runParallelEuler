@@ -1,0 +1,7 @@
+#!/bin/bash
+fe40
+blockMesh
+decomposePar -force
+mpirun dbnsFoam -parallel
+reconstructPar
+rm -rf processor*

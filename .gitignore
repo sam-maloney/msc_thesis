@@ -3,6 +3,8 @@
 *.lo
 *.o
 *.obj
+# Dependency lists
+*.dep
 # Precompiled Headers
 *.gch
 *.pch
@@ -84,6 +86,7 @@ build/
 0.*/
 processor*/
 log
+lsf.*
 
 # MATLAB temp files
 *.asv

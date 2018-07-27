@@ -10,41 +10,14 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      fvSchemes;
+    object      thermophysicalProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
-{
-    default Euler;
-}
+thermoType      hPsiThermo<pureMixture<constTransport<specieThermo<hConstThermo<perfectGas>>>>>;
 
-gradSchemes
-{
-    default         Gauss linear;
-}
-
-divSchemes
-{
-    dbns
-    {
-        flux           rusanov;
-        limiter        Venkatakrishnan;
-//        limiter        balancedPotential;
-    }
-}
-
-laplacianSchemes
-{}
-
-interpolationSchemes
-{
-    default               none;
-    interpolate(rho)      linear;
-}
-
-snGradSchemes
-{}
+//              name, nMoles, mol_weight,      Cp,               Hf, mu, Pr;
+mixture         air   1       11640.2561438975 2.857142857142857 0   0   1;
 
 
 // ************************************************************************* //

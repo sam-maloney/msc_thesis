@@ -9,42 +9,35 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       dictionary;
-    object      fvSchemes;
+    class       volScalarField;
+    object      T;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
-{
-    default Euler;
-}
+dimensions      [0 0 0 1 0 0 0];
 
-gradSchemes
-{
-    default         Gauss linear;
-}
+internalField   uniform 1.05; 
 
-divSchemes
+boundaryField
 {
-    dbns
+    inlet
     {
-        flux           rusanov;
-        limiter        Venkatakrishnan;
-//        limiter        balancedPotential;
+        type            fixedValue;
+        value           uniform 1.05;
+    }
+    outlet
+    {
+        type            zeroGradient;
+    }
+    sides
+    {
+        type            cyclic;
+    }
+    defaultFaces
+    {
+        type            empty;
     }
 }
-
-laplacianSchemes
-{}
-
-interpolationSchemes
-{
-    default               none;
-    interpolate(rho)      linear;
-}
-
-snGradSchemes
-{}
 
 
 // ************************************************************************* //

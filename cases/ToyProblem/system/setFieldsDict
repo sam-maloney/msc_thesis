@@ -10,41 +10,30 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      fvSchemes;
+    object      setFieldsDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
-{
-    default Euler;
-}
+defaultFieldValues
+(
+    volScalarFieldValue p 0.026381909547739
+    volScalarFieldValue T 0.208502188361161
+    volVectorFieldValue U (0 -2.228079401215960 0)
+);
 
-gradSchemes
-{
-    default         Gauss linear;
-}
-
-divSchemes
-{
-    dbns
+regions
+(
+    boxToCell
     {
-        flux           rusanov;
-        limiter        Venkatakrishnan;
-//        limiter        balancedPotential;
+        box (0 -2 0) (4 1 0.1);
+        fieldValues
+        (
+            volScalarFieldValue p 0.75
+            volScalarFieldValue T 1.05
+            volVectorFieldValue U (0 -0.394688351072542 0)
+        );
     }
-}
-
-laplacianSchemes
-{}
-
-interpolationSchemes
-{
-    default               none;
-    interpolate(rho)      linear;
-}
-
-snGradSchemes
-{}
+);
 
 
 // ************************************************************************* //

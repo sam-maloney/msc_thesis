@@ -10,41 +10,11 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      fvSchemes;
+    object      FASSettings;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-ddtSchemes
-{
-    default Euler;
-}
+minClusterSize 3;
+maxClusterSize 10;
+nLevel         1;
 
-gradSchemes
-{
-    default         Gauss linear;
-}
-
-divSchemes
-{
-    dbns
-    {
-        flux           rusanov;
-        limiter        Venkatakrishnan;
-//        limiter        balancedPotential;
-    }
-}
-
-laplacianSchemes
-{}
-
-interpolationSchemes
-{
-    default               none;
-    interpolate(rho)      linear;
-}
-
-snGradSchemes
-{}
-
-
-// ************************************************************************* //

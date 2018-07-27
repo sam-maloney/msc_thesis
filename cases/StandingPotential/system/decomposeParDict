@@ -10,52 +10,19 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
-    object      controlDict;
+    object      decomposeParDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     sonicFoam;
-
-startFrom       startTime;
-
-startTime       0;
-
-stopAt          endTime;
-
-endTime         1;
-
-deltaT          0.001;
-
-writeControl    runTime;
-
-writeInterval   0.1;
-
-purgeWrite      0;
-
-writeFormat     ascii;
-
-writePrecision  6;
-
-writeCompression off;
-
-timeFormat      general;
-
-timePrecision   6;
-
-runTimeModifiable false;
-
-functions
-{
-    libs            ("libfieldFunctionObjects.so");
-
-    Ma
-    {
-        type            MachNo;
-        executeControl  writeTime;
-        writeControl    writeTime;
-    }
-}
+numberOfSubdomains 8; 
+ 
+method          simple; 
+ 
+simpleCoeffs 
+{ 
+    n               (4 2 1); 
+    delta           0.001; 
+} 
 
 
 // ************************************************************************* //

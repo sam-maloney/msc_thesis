@@ -1,0 +1,24 @@
+    inlet
+    {
+        type            groovyBC;
+        value           uniform (0 -0.394688351072542 0);
+        variables (
+            "eps=1e-3;"
+            "Lx=4.0;"
+            "H=1.0;"
+            "gamma=4.0/3.0;"
+            "M1=5.0;"
+            "cin=1.0;"
+            "kx=2.0*pi/Lx;"
+            "Min=sqrt((2.0+(gamma-1.0)*M1*M1)/(2.0*gamma*M1*M1-gamma+1.0));"
+            "vin=-Min*cin;"
+            "tacc=H/mag(vin)/(1.0-Min);"
+            "omega0=4.0*pi/tacc;"
+            "dS=eps*cos(-omega0*time()+kx*pos().x);"
+            "fac=kx*cin*cin/(omega0*omega0+kx*kx*vin*vin)*dS/gamma;"
+            "dUx=fac*omega0;"
+            "dUy=-fac*kx*vin;"
+            "val=vector(dUx, dUy - 0.394688351072542, 0);"
+        );
+        valueExpression "val";
+    }

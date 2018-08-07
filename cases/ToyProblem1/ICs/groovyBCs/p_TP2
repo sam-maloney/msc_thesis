@@ -1,0 +1,25 @@
+    outlet
+    {
+        type            groovyBC;
+        value           uniform 0.75;
+        variables (
+            "eps=1e-3;"
+            "Lx=4.0;"
+            "H=1.0;"
+            "gamma=4.0/3.0;"
+            "M1=5.0;"
+            "cin=1.0;"
+            "pin=0.75;"
+            "kx=2*pi/Lx;"
+            "Min=sqrt((2+(gamma-1)*M1*M1)/(2*gamma*M1*M1-gamma+1));"
+            "vin=-Min*cin;"
+            "tacc=H/mag(vin)/(1-Min);"
+            "omega0=4*pi/tacc;"
+            "mu_=sqrt(1.0-pow(kx*cin/omega0,2)*(1-Min*Min));"
+            "sinusoid=eps*cos(-omega0*time()+kx*pos().x);"
+            "drho=(1.0+mu_*Min)/(1.0-Min*Min)*sinusoid;"
+            "dp=pin*(pow(1.0+drho,gamma)-1.0);"
+            "val=0.75+dp;"
+        );
+        valueExpression "val";
+    }

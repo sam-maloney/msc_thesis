@@ -26,10 +26,12 @@ Application
 
 Description
     Density-based compressible explicit time-marching flow solver
-    using enthalpy based thermo packages
+    using enthalpy based thermo packages and acting under an
+    externally applied potential field
 
 Author
     Hrvoje Jasak
+    Modified by Samuel Maloney
 
 \*---------------------------------------------------------------------------*/
 

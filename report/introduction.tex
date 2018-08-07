@@ -3,113 +3,38 @@
 
 \chapter{Introduction}
 
-This is version \verb-v1.4- of the template.
+In the study of astrophysical entities, accretion shocks are a fairly commonly encountered physical phenomena. In particular, standing accretion shocks (SAS) are part of the theory behind core-collapse supernovae, with an instability described by Blondin et al.\ \cite{Blondin2003} being proposed as a possible mechanism for driving the explosive evolution of these phsyical systems. This instability occurs because of the spherical nature of the system, with the effects of perturbations to the symmetry of the shock being trapped in the interior subsonic region and producing feedback loops which further perturb the shock front.
 
-We assume that you found this template on our institute's website, so
-we do not repeat everything stated there.  Consult the website again
-for pointers to further reading about \LaTeX{}.  This chapter only
-gives a brief overview of the files you are looking at.
-
-\section{Features}
-\label{sec:features}
-
-The rest of this document shows off a few features of the template
-files.  Look at the source code to see which macros we used!
-
-The template is divided into \TeX{} files as follows:
-\begin{enumerate}
-\item \texttt{thesis.tex} is the main file.
-\item \texttt{extrapackages.tex} holds extra package includes.
-\item \texttt{layoutsetup.tex} defines the style used in this document.
-\item \texttt{theoremsetup.tex} declares the theorem-like environments.
-\item \texttt{macrosetup.tex} defines extra macros that you may find
-  useful.
-\item \texttt{introduction.tex} contains this text.
-\item \texttt{sections.tex} is a quick demo of each sectioning level
-  available.
-\item \texttt{refs.bib} is an example bibliography file.  You can use
-  Bib\TeX{} to quote references.  For example, read
-  \cite{bringhurst1996ets} if you can get a hold of it.
-\end{enumerate}
+In order to better understand the underlying mechanisms of this instability, Foglizzo et al.\ \cite{Foglizzo2009} and Sato et al.\ \cite{Sato2009} proposed and studied a simple toy problem, the details of which are discussed further in Section \ref{sec:toyProblem}. Using this simple set-up they showed evidence for a coupled advective-acoustic cycle between the stationary shock front and an interior decceleratiing potential step, intended to model the effects of matter settling onto the accreting object's surface.
 
 
-\subsection{Extra package includes}
+\section{Euler Equations}
+\label{sec:euler}
 
-The file \texttt{extrapackages.tex} lists some packages that usually
-come in handy.  Simply have a look at the source code.  We have
-added the following comments based on our experiences:
-\begin{description}
-\item[REC] This package is recommended.
-\item[OPT] This package is optional.  It usually solves a specific
-  problem in a clever way.
-\item[ADV] This package is for the advanced user, but solves a problem
-  frequent enough that we mention it. Consult the package's
-  documentation.
-\end{description}
+The time evolution of the dynamics of fluids can be described by systems of balance laws. For inviscid fluids, this system is given by the well-known Euler equations with source terms, which are given here following the notation of K\"appeli \cite{Kappeli2014} as
+\begin{align} \label{eq:euler}
+\frac{\partial{\rho}}{\partial{t}} &+ \nabla \cdot (\rho \mathbf{v}) = 0,\\
+\frac{\partial{\rho \mathbf{v}}}{\partial{t}} &+ \nabla \cdot (\mathbf{v} \rho \mathbf{v}) + \nabla p = -\rho \nabla \phi,\\
+\frac{\partial{E}}{\partial{t}} &+ \nabla \cdot \left[(E+p)\mathbf{v}\right] = -\rho \mathbf{v} \cdot \nabla \phi,
+\end{align}
+where $\rho$ is the mass density, and $\mathbf{v}$ is the local velocity vector. $E$ is the total energy sum of the internal and kinetic energies given as $$E=\rho e + \frac{\rho v^2}{2}.$$  An equation of state $p=p(\rho,e)$ is given to complete the relations between these primitive quanitites. The quantitiy $\phi$ on the right-hand side of the latter two equations represents an external potential field (e.g.\ gravity) which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given value, through pre-computation, or by solving for it independent from the other fluid quantities at each time step.
 
-As a small example, here is a reference to the Section \emph{Features}
-typeset with the recommended \package{varioref} package:
-\begin{quote}
-  See Section~\vref{sec:features}.
-\end{quote}
+\subsection{Steady States}
+
+Fun with stationary solutions.
 
 
-\subsection{Layout setup}
+\section{Numerics}
+\label{sec:numerics}
 
-This defines the overall look of the document -- for example, it
-changes the chapter and section heading appearance.  We consider this
-a `do not touch' area.  Take a look at the excellent \emph{Memoir}
-documentation before changing it.
+Overview of the numerical theory
 
-In fact, take a look at the excellent \emph{Memoir} documentation,
-full stop.
+\subsection{Well-Balanced Reconstruction}
 
-
-\subsection{Theorem setup}
-
-This file defines a bunch of theorem-like environments.
-
-\begin{theorem}
-  An example theorem.
-\end{theorem}
-
-\begin{proof}
-  Proof text goes here.
-\end{proof}
-
-Note that the q.e.d.\ symbol moves to the correct place automatically
-if you end the proof with an \texttt{enumerate} or
-\texttt{displaymath}.  You do not need to use \verb-\qedhere- as with
-\package{amsthm}.
-
-\begin{theorem}[Some Famous Guy]
-  Another example theorem.
-\end{theorem}
-
-\begin{proof}
-  This proof
-  \begin{enumerate}
-  \item ends in an enumerate.
-  \end{enumerate}
-\end{proof}
-
-\begin{proposition}
-  Note that all theorem-like environments are by default numbered on
-  the same counter.
-\end{proposition}
-
-\begin{proof}
-  This proof ends in a display like so:
-  \begin{displaymath}
-    f(x) = x^2.
-  \end{displaymath}
-\end{proof}
+Look at the new reconstruction
 
 
-\subsection{Macro setup}
+\section{Toy Problem}
+\label{sec:toyProblem}
 
-For now the macro setup only shows how to define some basic macros,
-and how to use a neat feature of the \package{mathtools} package:
-\begin{displaymath}
-  \abs{a}, \quad \abs*{\frac{a}{b}}, \quad \abs[\big]{\frac{a}{b}}.
-\end{displaymath}
+Description of the Toy problem definition

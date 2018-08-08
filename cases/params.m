@@ -1,5 +1,6 @@
 gamma = 4/3; % R/Cv + 1
 R = 5/7; % specific gas constant. depends on molWeight
+Runiversal_foam = 8.31451e3;
 Cv = R/(gamma-1); % 15/7
 Cp = R + Cv; % 20/7
 pin = 0.75;

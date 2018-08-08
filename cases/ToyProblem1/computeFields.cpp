@@ -13,7 +13,7 @@ int NX, NY;
 
 int main(int argc, char** argv)
 {
-  // read # of grid cells from cmd line if present, otherwise default is 400
+  // read # of grid cells from cmd line if present, otherwise use default value
   NX = ( argc > 1 ? std::stoi(argv[1]) : 400 );
   NY = ( argc > 2 ? std::stoi(argv[2]) : 400 );
 
@@ -64,11 +64,16 @@ int main(int argc, char** argv)
     rhoPrev = rho;
   }
 
-  writeFooter(PhiFile, "0.935973200965766", "fixedValue;\n        value           uniform 0;");
-  writeFooter(rhoFile, "1", "calculated;\n        value           uniform 2.37037037037037;");
-  writeFooter(  TFile, "1.05", "zeroGradient;");
-  writeFooter(  UFile, "(0 -0.394688351072542 0)", "zeroGradient;");
-  writeFooter(  pFile, "0.75", "zeroGradient;");
+  writeFooter(PhiFile, "fixedValue;\n        value           uniform 0.935973200965766",
+                       "fixedValue;\n        value           uniform 0");
+  writeFooter(rhoFile, "calculated;\n        value           uniform 1",
+                       "calculated;\n        value           uniform 2.37037037037037");
+  writeFooter(  TFile, "fixedValue;\n        value           uniform 1.05",
+                       "zeroGradient");
+  writeFooter(  UFile, "fixedValue;\n        value           uniform (0 -0.394688351072542 0)",
+                       "zeroGradient");
+  writeFooter(  pFile, "fixedValue;\n        value           uniform 0.75",
+                       "zeroGradient");
 
   PhiFile.close();
   rhoFile.close();
@@ -87,7 +92,7 @@ double computeRho(const double y, double Phi, double rhoPrev)
   do {
     rhoPrev = rho;
     rho -= (0.077889447236181/(rho*rho) + 3.0*std::cbrt(rho) + Phi - B)/
-           (-0.155778894472362/(rho*rho*rho) + std::cbrt(rho));
+           (-0.155778894472362/(rho*rho*rho) + std::pow(rho,-2.0/3.0));
   } while ( std::abs(rho-rhoPrev) > 2e-15 );
 
   return rho;
@@ -120,7 +125,7 @@ void writeHeader(std::fstream& file, std::string name, std::string type,
        << "(\n";
 }
 
-void writeFooter(std::fstream& file, std::string inVal, std::string outBC)
+void writeFooter(std::fstream& file, std::string inBC, std::string outBC)
 {
   file << ")\n"
        << ";\n"
@@ -129,12 +134,11 @@ void writeFooter(std::fstream& file, std::string inVal, std::string outBC)
        << "{\n"
        << "    inlet\n"
        << "    {\n"
-       << "        type            fixedValue;\n"
-       << "        value           uniform " << inVal << ";\n"
+       << "        type            " << inBC << ";\n"
        << "    }\n"
        << "    outlet\n"
        << "    {\n"
-       << "        type            " << outBC << "\n"
+       << "        type            " << outBC << ";\n"
        << "    }\n"
        << "    sides\n"
        << "    {\n"

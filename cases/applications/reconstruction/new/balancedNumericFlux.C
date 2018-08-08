@@ -323,7 +323,7 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computePrimitives
 
     // Compute momentum and its square at cell centre (assumed constant over cell)
     const vector m  = rho*U;
-    const scalar m2 = magSqr(U)/sqr(rho);
+    const scalar m2 = magSqr(m);
     
     // Use Newton's method to solve for rho at the cell face
     do
@@ -331,7 +331,7 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computePrimitives
         rhoPrev = rho;
         rho -= ( 0.5*m2/sqr(rho) + gamma/(gamma-1.0)*K*pow(rho, gamma-1.0) +
                  potentialFace - B )
-             / ( -m2/pow3(rho) + gamma*K*pow(rho, gamma-1.0) );
+             / ( -m2/pow3(rho) + gamma*K*pow(rho, gamma-2.0) );
     } 
     while ( abs(rho-rhoPrev) > tol_ );
 

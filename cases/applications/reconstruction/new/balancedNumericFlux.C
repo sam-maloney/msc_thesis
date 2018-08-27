@@ -81,6 +81,19 @@ Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::numericFlux
         ),
         rhoFlux_*linearInterpolate(thermo.Cv()*T_ + 0.5*magSqr(U_))
     ),
+    rhoUSource_
+    (
+        IOobject
+        (
+            "rhoUSource",
+            this->mesh().time().timeName(),
+            this->mesh(),
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        -thermo_.rho()*fvc::grad(potential)
+    ),
+    volumeInverse_( 1.0/this->mesh().V() ),
     tol_
     (
         readScalar
@@ -102,16 +115,26 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
     const unallocLabelList& owner = this->mesh().owner();
     const unallocLabelList& neighbour = this->mesh().neighbour();
 
-    // Get the face area vector
+    // Get the face area vector and cell volumes
     const surfaceVectorField& Sf = this->mesh().Sf();
     const surfaceScalarField& magSf = this->mesh().magSf();
 
     // Thermodynamics
-    const volScalarField Cv = thermo_.Cv();
-    const volScalarField R  = thermo_.Cp() - Cv;
+    const volScalarField Cv  = thermo_.Cv();
+    const volScalarField R   = thermo_.Cp() - Cv;
+    const volScalarField rho = thermo_.rho();
 
     // Interpolate the potential to the cell faces
-    const surfaceScalarField potFace = linearInterpolate(potential_);
+    const surfaceScalarField potentialFace = linearInterpolate(potential_);
+
+    // Compute adiabatic index, momentum squared, Bernoulli, and EOS constants
+    const volScalarField gamma = R/Cv + 1.0;
+    const volScalarField m2 = magSqr(rho*U_);
+    const volScalarField B = 0.5*magSqr(U_) + gamma/(gamma-1.0)*R*T_ + potential_;
+    const volScalarField K = p_ / pow(rho, gamma);
+
+    // Reset momentum source back to zero
+    rhoUSource_ *= scalar(0.0);
 
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
@@ -119,7 +142,7 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
         const label own = owner[faceI];
         const label nei = neighbour[faceI];
 
-        scalar pLeft, TLeft, pRight, TRight;
+        scalar pLeft, TLeft, pRight, TRight, rhoUSourceLeft, rhoUSourceRight;
         vector ULeft, URight;
 
         computePrimitives
@@ -127,13 +150,16 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
             pLeft,
             ULeft,
             TLeft,
-            p_[own],
+            rhoUSourceLeft,
             U_[own],
-            T_[own],
             R[own],
-            Cv[own],
+            B[own],
+            K[own],
+            m2[own],
+            rho[own],
+            gamma[own],
             potential_[own],
-            potFace[faceI]
+            potentialFace[faceI]
         );
 
         computePrimitives
@@ -141,14 +167,21 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
             pRight,
             URight,
             TRight,
-            p_[nei],
+            rhoUSourceRight,
             U_[nei],
-            T_[nei],
             R[nei],
-            Cv[nei],
+            B[nei],
+            K[nei],
+            m2[nei],
+            rho[nei],
+            gamma[nei],
             potential_[nei],
-            potFace[faceI]
+            potentialFace[faceI]
         );
+
+        // Calculate local momemtum source contributions
+        rhoUSource_[own] += Sf[faceI]*rhoUSourceLeft;
+        rhoUSource_[nei] -= Sf[faceI]*rhoUSourceRight;
 
         // Calculate fluxes with reconstructed primitive variables at faces
         Flux::evaluateFlux
@@ -191,8 +224,12 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
         const fvsPatchVectorField& pSf = Sf.boundaryField()[patchi];
         const fvsPatchScalarField& pMagSf = magSf.boundaryField()[patchi];
 
+        const unallocLabelList& pFaceCells =
+            this->mesh().boundary()[patchi].faceCells();
+
         // Cell face potential
-        const fvsPatchScalarField& ppotFace = potFace.boundaryField()[patchi];
+        const fvsPatchScalarField& ppotentialFace =
+            potentialFace.boundaryField()[patchi];
 
         if (pp.coupled())
         {
@@ -209,6 +246,26 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
                 T_.boundaryField()[patchi].patchInternalField();
             const scalarField pTRight =
                 T_.boundaryField()[patchi].patchNeighbourField();
+            const scalarField prhoLeft  =
+                rho.boundaryField()[patchi].patchInternalField();
+            const scalarField prhoRight =
+                rho.boundaryField()[patchi].patchNeighbourField();
+            const scalarField pgammaLeft  =
+                gamma.boundaryField()[patchi].patchInternalField();
+            const scalarField pgammaRight =
+                gamma.boundaryField()[patchi].patchNeighbourField();
+            const scalarField pBLeft  =
+                B.boundaryField()[patchi].patchInternalField();
+            const scalarField pBRight =
+                B.boundaryField()[patchi].patchNeighbourField();
+            const scalarField pKLeft  =
+                K.boundaryField()[patchi].patchInternalField();
+            const scalarField pKRight =
+                K.boundaryField()[patchi].patchNeighbourField();
+            const scalarField pm2Left  =
+                m2.boundaryField()[patchi].patchInternalField();
+            const scalarField pm2Right =
+                m2.boundaryField()[patchi].patchNeighbourField();
             const scalarField ppotentialLeft  =
                 potential_.boundaryField()[patchi].patchInternalField();
             const scalarField ppotentialRight =
@@ -216,37 +273,45 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
 
             forAll (pp, facei)
             {
-                scalar pLeft, TLeft, pRight, TRight;
+                scalar pLeft, TLeft, pRight, TRight, rhoUSourceLocal;
                 vector ULeft, URight;
-                
+
                 computePrimitives
                 (
                     pLeft,
                     ULeft,
                     TLeft,
-                    ppLeft[facei],
+                    rhoUSourceLocal,
                     pULeft[facei],
-                    pTLeft[facei],
                     pR[facei],
-                    pCv[facei],
+                    pBLeft[facei],
+                    pKLeft[facei],
+                    pm2Left[facei],
+                    prhoLeft[facei],
+                    pgammaLeft[facei],
                     ppotentialLeft[facei],
-                    ppotFace[facei]
+                    ppotentialFace[facei]
                 );
-                
+
+                rhoUSource_[pFaceCells[facei]] += pSf[facei]*rhoUSourceLocal;
+
                 computePrimitives
                 (
                     pRight,
                     URight,
                     TRight,
-                    ppRight[facei],
+                    rhoUSourceLocal,
                     pURight[facei],
-                    pTRight[facei],
                     pR[facei],
-                    pCv[facei],
+                    pBRight[facei],
+                    pKRight[facei],
+                    pm2Right[facei],
+                    prhoRight[facei],
+                    pgammaRight[facei],
                     ppotentialRight[facei],
-                    ppotFace[facei]
+                    ppotentialFace[facei]
                 );
-                
+
                 Flux::evaluateFlux
                 (
                     pRhoFlux[facei],
@@ -290,9 +355,17 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
                     pSf[facei],
                     pMagSf[facei]
                 );
+
+                scalar rhoLocal = pp[facei]/(pR[facei]*pT[facei]);
+                rhoUSource_[pFaceCells[facei]] +=
+                    pSf[facei] * (rhoLocal*magSqr(pU[facei]) + pp[facei]);
             }
         }
     }
+
+    Field<vector>& irhoUSource = rhoUSource_;
+    irhoUSource *= volumeInverse_;
+    rhoUSource_.correctBoundaryConditions();
 }
 
 
@@ -302,43 +375,46 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computePrimitives
     scalar& pFace,
     vector& UFace,
     scalar& TFace,
-    const scalar p,
-    const vector U,
-    const scalar T,
-    const scalar R,
-    const scalar Cv,
-    const scalar potential,
-    const scalar potentialFace
+    scalar& rhoUSource,
+    const vector& U,
+    const scalar& R,
+    const scalar& B,
+    const scalar& K,
+    const scalar& m2,
+    const scalar& rho,
+    const scalar& gamma,
+    const scalar& potential,
+    const scalar& potentialFace
 )
 {
-    // Initalize rho with value at the cell centre
-    scalar rhoPrev, rho = p / (R*T);
-    
-    // Compute adiabatic index and equation of state constant
-    const scalar gamma = R/Cv + 1.0;
-    const scalar K = p / pow(rho, gamma);
+    // Initalize rhoFace with value at the cell centre
+    scalar rhoPrev, rhoFace = rho;
 
-    // Compute Bernoulli constant at cell centre
-    const scalar B = 0.5*magSqr(U) + gamma/(gamma-1.0)*R*T + potential;
-
-    // Compute momentum and its square at cell centre (assumed constant over cell)
-    const vector m  = rho*U;
-    const scalar m2 = magSqr(m);
-    
-    // Use Newton's method to solve for rho at the cell face
+    // Use Newton's method to solve for rhoFace at the cell face
+    unsigned int iter = 0;
+    const scalar tolerance = rho*tol_;
     do
     {
-        rhoPrev = rho;
-        rho -= ( 0.5*m2/sqr(rho) + gamma/(gamma-1.0)*K*pow(rho, gamma-1.0) +
+        rhoPrev = rhoFace;
+        rhoFace -= ( 0.5*m2/sqr(rhoFace) + gamma/(gamma-1.0)*K*pow(rhoFace, gamma-1.0) +
                  potentialFace - B )
-             / ( -m2/pow3(rho) + gamma*K*pow(rho, gamma-2.0) );
-    } 
-    while ( abs(rho-rhoPrev) > tol_ );
+             / ( -m2/pow3(rhoFace) + gamma*K*pow(rhoFace, gamma-2.0) );
+        iter++;
+    }
+    while ( ( mag(rhoFace-rhoPrev) > tolerance ) && ( iter < 10000 ) );
 
-    // Use the new value of rho to compute other primitives at the cell face
-    pFace = K*pow(rho, gamma);
-    UFace = m/rho;
-    TFace = pFace/(rho*R);
+    if ( iter == 10000 )
+    {
+        Info << "maxIter (10000) reached computing face primitives.\n"
+             << "rhoFace = " << rhoFace << ",    rhoPrev = " << rhoPrev
+             << ",    residual = " << mag(rhoFace-rhoPrev) << endl;
+    }
+
+    // Use new value of rhoFace to compute other primitives at the cell face
+    pFace = K*pow(rhoFace, gamma);
+    UFace = U*rho/rhoFace;
+    TFace = pFace/(rhoFace*R);
+    rhoUSource = m2/rhoFace + pFace;
 }
 
 

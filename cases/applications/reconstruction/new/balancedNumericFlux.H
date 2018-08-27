@@ -93,6 +93,15 @@ class numericFlux<Flux, balancedPotentialLimiter>
             surfaceScalarField rhoEFlux_;
 
 
+        // Sources
+
+            //- Momentum Source
+            volVectorField rhoUSource_;
+
+            //- Inverse volume for source computation
+            const DimensionedField<scalar, volMesh> volumeInverse_;
+
+
         // Other method parameters
 
             // Newton's method tolerance for rho
@@ -194,6 +203,15 @@ public:
             }
 
 
+       // Return Sources
+
+            //- Return momentum source
+            virtual const volVectorField& rhoUSource() const
+            {
+                return rhoUSource_;
+            }
+
+
        // Return residuals
 
             //- Return density equation residual
@@ -229,13 +247,16 @@ public:
                 scalar& pFace,
                 vector& UFace,
                 scalar& TFace,
-                const scalar p,
-                const vector U,
-                const scalar T,
-                const scalar R,
-                const scalar Cv,
-                const scalar potential,
-                const scalar potentialFace
+                scalar& rhoUSource,
+                const vector& U,
+                const scalar& R,
+                const scalar& B,
+                const scalar& K,
+                const scalar& m2,
+                const scalar& rho,
+                const scalar& gamma,
+                const scalar& potential,
+                const scalar& potentialFace
             );
 };
 

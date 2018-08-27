@@ -72,6 +72,11 @@ int main(int argc, char *argv[])
     // Switch off solver messages
     lduMatrix::debug = 0;
 
+    // Store limiter type
+    const word limiterType = word(
+      mesh.schemesDict().subDict("divSchemes").subDict("dbns").lookup("limiter")
+    );
+
     while (runTime.run())
     {
 #       include "readTimeControls.H"
@@ -96,12 +101,24 @@ int main(int argc, char *argv[])
               + fvc::div(dbnsFlux.rhoFlux())
             );
 
-            solve
-            (
-                1.0/beta[i]*fvm::ddt(rhoU)
-              + fvc::div(dbnsFlux.rhoUFlux())
-              + rho*fvc::grad(potential)
-            );
+            if ( limiterType == "balancedPotential" )
+            {
+                solve
+                (
+                    1.0/beta[i]*fvm::ddt(rhoU)
+                  + fvc::div(dbnsFlux.rhoUFlux())
+                  - dbnsFlux.rhoUSource()
+                );
+            }
+            else
+            {
+                solve
+                (
+                    1.0/beta[i]*fvm::ddt(rhoU)
+                  + fvc::div(dbnsFlux.rhoUFlux())
+                  + rho*fvc::grad(potential)
+                );
+            }
 
             solve
             (
@@ -109,6 +126,9 @@ int main(int argc, char *argv[])
               + fvc::div(dbnsFlux.rhoEFlux())
               + ( rhoU & fvc::grad(potential) )
             );
+
+//            Info << "rho*grad(Phi)   = " << (sqrt(sum(magSqr(rho*fvc::grad(potential) + fvc::div(dbnsFlux.rhoUFlux()))))/mesh.nCells()).value()
+//                 << "\nBalanced Source = " << (sqrt(sum(magSqr((fvc::div(dbnsFlux.rhoUFlux()) - dbnsFlux.rhoUSource()))))/mesh.nCells()).value() << endl;
 
 #           include "updateFields.H"
         }

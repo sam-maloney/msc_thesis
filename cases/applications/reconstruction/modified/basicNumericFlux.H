@@ -148,6 +148,16 @@ public:
             virtual const surfaceScalarField& rhoEFlux() const = 0;
 
 
+       // Return fluxes
+
+            //- Return momentum source
+            virtual const volVectorField& rhoUSource() const
+            {
+                tmp<volVectorField> dummy;
+                return dummy;
+            }
+
+
        // Return residuals
 
             //- Return density equation residual

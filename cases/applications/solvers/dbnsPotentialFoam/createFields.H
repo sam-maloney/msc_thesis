@@ -88,6 +88,7 @@
         p,
         U,
         T,
+        rho,
         potential,
         thermo()
     );

@@ -35,6 +35,7 @@ Foam::numericFlux<Flux, Limiter>::numericFlux
     const volScalarField& p,
     const volVectorField& U,
     const volScalarField& T,
+    const volScalarField& rho,
     const volScalarField& potential,
     basicThermo& thermo
 )

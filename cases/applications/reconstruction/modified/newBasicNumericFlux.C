@@ -63,8 +63,9 @@ Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
             << exit(FatalError);
     }
 
-    // Use p as a dummy placeholder for potential, which will be ignored anyways
-    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, p, thermo));
+    // Use p as a dummy placeholder for rho and potential,
+    // which will be ignored anyways
+    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, p, p, thermo));
 }
 
 
@@ -73,6 +74,7 @@ Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
     const volScalarField& p,
     const volVectorField& U,
     const volScalarField& T,
+    const volScalarField& rho,
     const volScalarField& potential,
     basicThermo& thermo
 )
@@ -97,7 +99,7 @@ Foam::autoPtr<Foam::basicNumericFlux> Foam::basicNumericFlux::New
             << exit(FatalError);
     }
 
-    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, potential, thermo));
+    return autoPtr<basicNumericFlux>(cstrIter()(p, U, T, rho, potential, thermo));
 }
 
 

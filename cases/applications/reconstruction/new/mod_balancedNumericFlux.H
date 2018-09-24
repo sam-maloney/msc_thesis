@@ -22,28 +22,30 @@ License
     along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    numericFlux
+    NumericFlux (partial specialization)
 
 Description
-    Single level numeric flux class for density-based solvers
+    Single level numeric flux class for density-based solvers.
+    Uses well-balanced reconstruction instead of gradient limiting.
 
 Author
     Aleksandar Jemcov
     Rewrite by Hrvoje Jasak
-
+    Modified by Samuel Maloney
 
 SourceFiles
-    numericFlux.H
-    numericFlux.C
+    balancedNumericFlux.H
+    balancedNumericFlux.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef numericFlux_H
-#define numericFlux_H
+#ifndef balancedNumericFlux_H
+#define balancedNumericFlux_H
 
 #include "numericFluxBase.H"
 #include "basicThermo.H"
 #include "fvc.H"
+#include "balancedPotentialLimiter.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -51,11 +53,11 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                          Class numericFlux Declaration
+           Class numericFlux (partial specialization) Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Flux, class Limiter>
-class numericFlux
+template<class Flux>
+class numericFlux<Flux, balancedPotentialLimiter>
 :
     public numericFluxBase<Flux>
 {
@@ -72,6 +74,12 @@ class numericFlux
             //- Static temperature
             const volScalarField& T_;
 
+            //- Mass density
+            const volScalarField& rho_;
+
+            //- External potential
+            const volScalarField& potential_;
+
             //- Reference to the thermophysicalModel
             basicThermo& thermo_;
 
@@ -86,6 +94,29 @@ class numericFlux
 
             //- Energy flux
             surfaceScalarField rhoEFlux_;
+
+
+        // Sources
+
+            //- Momentum Source
+            volVectorField rhoUSource_;
+
+            //- Inverse volume for source computation
+            const DimensionedField<scalar, volMesh> volumeInverse_;
+
+            //- Potential at cell faces
+            const surfaceScalarField potentialFace_;
+
+
+        // Other method parameters
+
+            //- Newton's method tolerance for rho
+            const scalar tol_;
+
+            //- Constant thermophysical properties
+            const dimensioned<scalar> R_;
+            const dimensioned<scalar> Cv_;
+            const scalar gamma_;
 
 
         // Gradients: no longer stored.  HJ, 22/Apr/2016
@@ -184,6 +215,15 @@ public:
             }
 
 
+       // Return Sources
+
+            //- Return momentum source
+            virtual const volVectorField& rhoUSource() const
+            {
+                return rhoUSource_;
+            }
+
+
        // Return residuals
 
             //- Return density equation residual
@@ -209,18 +249,33 @@ public:
 
             //- Compute flux
             virtual void computeFlux();
+
+
+        // Computes primitive values for the given cell face potential
+
+            //- Compute primitives at cell face
+            void computePrimitives
+            (
+                scalar& pFace,
+                vector& UFace,
+                scalar& TFace,
+                scalar& rhoUSource,
+                const vector& U,
+                const scalar& R,
+                const scalar& B,
+                const scalar& K,
+                const scalar& m2,
+                const scalar& rho,
+                const scalar& gamma,
+                const scalar& potential,
+                const scalar& potentialFace
+            );
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 } // End namespace Foam
-
-#include "balancedNumericFlux.H"
-
-#ifdef NoRepository
-#   include "numericFlux.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

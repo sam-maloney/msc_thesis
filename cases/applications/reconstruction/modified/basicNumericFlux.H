@@ -88,10 +88,11 @@ public:
             const volScalarField& p,
             const volVectorField& U,
             const volScalarField& T,
+            const volScalarField& rho,
             const volScalarField& potential,
             basicThermo& thermo
         ),
-        (p, U, T, potential, thermo)
+        (p, U, T, rho, potential, thermo)
     );
 #endif
 
@@ -119,6 +120,7 @@ public:
         const volScalarField& p,
         const volVectorField& U,
         const volScalarField& T,
+        const volScalarField& rho,
         const volScalarField& potential,
         basicThermo& thermo
     );

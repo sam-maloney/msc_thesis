@@ -74,11 +74,29 @@ class numericFlux<Flux, balancedPotentialLimiter>
             //- Static temperature
             const volScalarField& T_;
 
+            //- Mass density
+            const volScalarField& rho_;
+
             //- External potential
             const volScalarField& potential_;
 
             //- Reference to the thermophysicalModel
             basicThermo& thermo_;
+
+
+        // Reconstructed Primitives at cell faces
+
+            //- Static pressure
+            surfaceScalarField pLeft_;
+            surfaceScalarField pRight_;
+
+            //- Velocity
+            surfaceVectorField ULeft_;
+            surfaceVectorField URight_;
+
+            //- Static temperature
+            surfaceScalarField TLeft_;
+            surfaceScalarField TRight_;
 
 
         // Fluxes
@@ -170,6 +188,7 @@ public:
             const volScalarField& p,
             const volVectorField& U,
             const volScalarField& T,
+            const volScalarField& rho,
             const volScalarField& potential,
             basicThermo& thermo
         );

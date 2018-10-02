@@ -81,14 +81,14 @@ private:
         //- Reference to the mesh
         const fvMesh& mesh_;
 
-        //- Field
-        const GeoFieldType& phi_;
-
         //- Grad field
         const GeoGradFieldType& gradPhi_;
 
         //- Limiter
         GeoFieldType phiLimiter_;
+
+        //- Field
+        const GeoFieldType& phi_;
 
 
 public:
@@ -103,7 +103,6 @@ public:
         )
         :
             mesh_(phi.mesh()),
-            phi_(phi),
             gradPhi_(gradPhi),
             phiLimiter_
             (
@@ -117,7 +116,8 @@ public:
                 ),
                 mesh_,
                 dimensioned<Type>("pLimiter", dimless, pTraits<Type>::one)
-            )
+            ),
+            phi_(phi)
         {
             // Collect min and max values from neighbourhood
             GeoFieldType phiMinValue
@@ -233,8 +233,8 @@ public:
                     // Get patch
                     const fvPatch& p = phi.boundaryField()[patchI].patch();
 
-                    const FieldType pNei =
-                        phi.boundaryField()[patchI].patchNeighbourField();
+//                    const FieldType pNei =
+//                        phi.boundaryField()[patchI].patchNeighbourField();
 
                     const labelList& fc = p.faceCells();
 
@@ -258,6 +258,122 @@ public:
                             cellVolume[curFC],
                             phiMaxIn[curFC] - phi_[curFC],
                             phiMinIn[curFC] - phi_[curFC],
+                            (deltaR[faceI] & gradPhiLeft[faceI])
+                        );
+                    }
+                }
+            }
+
+            // Do parallel communication to correct limiter on
+            // coupled boundaries
+            phiLimiter_.correctBoundaryConditions();
+        }
+
+
+        //- Construct from gradient field, assumes field is constant zero
+        MDLimiter
+        (
+            const GeoGradFieldType& gradPhi
+        )
+        :
+            mesh_(gradPhi.mesh()),
+            gradPhi_(gradPhi),
+            phiLimiter_
+            (
+                IOobject
+                (
+                    "phiLimiter",
+                    mesh_.time().timeName(),
+                    mesh_,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
+                ),
+                mesh_,
+                dimensioned<Type>("pLimiter", dimless, pTraits<Type>::one)
+            ),
+            phi_(phiLimiter_) // Dummy initialization, phi_ is not used
+        {
+            // Calculate limiter
+
+            // Get geometrical information
+            const DimensionedField<scalar, volMesh>& cellVolume = mesh_.V();
+            const volVectorField& cellCentre = mesh_.C();
+            const surfaceVectorField& faceCentre = mesh_.Cf();
+
+            // Create limiter function
+            LimiterFunctionType limitFunction;
+
+            FieldType& phiLimiterIn = phiLimiter_.internalField();
+
+            const GradFieldType& gradPhiIn = gradPhi.internalField();
+
+            const unallocLabelList& owner = mesh_.owner();
+            const unallocLabelList& neighbour = mesh_.neighbour();
+
+            Type zeroValue = scalar(0.0)*phiLimiterIn[0];
+
+            // Compute limiter values, internal faces
+            forAll (owner, faceI)
+            {
+                const label& own = owner[faceI];
+                const label& nei = neighbour[faceI];
+
+                vector deltaRLeft = faceCentre[faceI] - cellCentre[own];
+                vector deltaRRight = faceCentre[faceI] - cellCentre[nei];
+
+                // Find minimal limiter value in each cell
+
+                // Owner side
+                limitFunction.limiter
+                (
+                    phiLimiterIn[own],
+                    cellVolume[own],
+                    zeroValue,
+                    zeroValue,
+                    (deltaRLeft & gradPhiIn[own])
+                );
+
+                // Neighbour side
+                limitFunction.limiter
+                (
+                    phiLimiterIn[nei],
+                    cellVolume[nei],
+                    zeroValue,
+                    zeroValue,
+                    (deltaRRight & gradPhiIn[nei])
+                );
+            }
+
+            // Coupled boundaries
+            forAll (gradPhi.boundaryField(), patchI)
+            {
+                if (gradPhi.boundaryField()[patchI].coupled())
+                {
+                    // Get patch
+                    const fvPatch& p = gradPhi.boundaryField()[patchI].patch();
+
+                    const labelList& fc = p.faceCells();
+
+                    const vectorField deltaR = p.Cf() - p.Cn();
+
+                    // Get gradients
+                    const GradFieldType gradPhiLeft =
+                        gradPhi.boundaryField()[patchI].patchInternalField();
+
+                    const GradFieldType gradPhiRight =
+                        gradPhi.boundaryField()[patchI].patchNeighbourField();
+
+                    // Find minimal limiter value in each cell
+                    forAll (fc, faceI)
+                    {
+                        const label& curFC = fc[faceI];
+
+                        limitFunction.limiter
+                        (
+                            phiLimiterIn[curFC],
+                            cellVolume[curFC],
+                            zeroValue,
+                            zeroValue,
                             (deltaR[faceI] & gradPhiLeft[faceI])
                         );
                     }

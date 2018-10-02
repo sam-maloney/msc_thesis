@@ -99,6 +99,18 @@ class numericFlux<Flux, balancedPotentialLimiter>
             surfaceScalarField TRight_;
 
 
+        // Gradients of reconstruction
+
+            //- Static pressure
+            volVectorField gradP_;
+
+            //- Velocity
+            volTensorField gradU_;
+
+            //- Static temperature
+            volVectorField gradT_;
+
+
         // Fluxes
 
             //- Density flux
@@ -199,6 +211,16 @@ public:
     {}
 
 
+    // Typedef of a structure for passing local data
+    struct dataStruct
+    {
+        scalar rhoUSource;
+        scalar pNei;
+        vector UNei;
+        scalar TNei;
+    };
+
+
     // Member Functions
 
         // Return fluxes
@@ -266,7 +288,7 @@ public:
                 scalar& pFace,
                 vector& UFace,
                 scalar& TFace,
-                scalar& rhoUSource,
+                dataStruct& localData,
                 const vector& U,
                 const scalar& R,
                 const scalar& B,

@@ -81,7 +81,7 @@ src/alsvid-uq
 run/
 build/
 
-# open foam results and libraries
+# OpenFOAM results and libraries
 [1-9]*/
 0.*/
 processor*/

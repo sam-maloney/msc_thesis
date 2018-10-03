@@ -20,7 +20,7 @@ solvers
     {
         // Used only by the balancedPotentialLimiter
         solver          Newton;
-        tolerance       2e-15;
+        tolerance       3e-15;
     }
 
     rhoU

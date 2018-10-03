@@ -270,10 +270,12 @@ public:
         }
 
 
-        //- Construct from gradient field, assumes field is constant zero
+        //- Construct from gradient field and min/max fields
         MDLimiter
         (
-            const GeoGradFieldType& gradPhi
+            const GeoGradFieldType& gradPhi,
+            const GeoFieldType& phiMaxValue,
+            const GeoFieldType& phiMinValue
         )
         :
             mesh_(gradPhi.mesh()),
@@ -291,7 +293,7 @@ public:
                 mesh_,
                 dimensioned<Type>("pLimiter", dimless, pTraits<Type>::one)
             ),
-            phi_(phiLimiter_) // Dummy initialization, phi_ is not used
+            phi_(phiMaxValue) // Dummy initialization, phi_ is not used
         {
             // Calculate limiter
 
@@ -310,7 +312,8 @@ public:
             const unallocLabelList& owner = mesh_.owner();
             const unallocLabelList& neighbour = mesh_.neighbour();
 
-            Type zeroValue = scalar(0.0)*phiLimiterIn[0];
+            const Field<Type>& phiMinIn = phiMinValue.internalField();
+            const Field<Type>& phiMaxIn = phiMaxValue.internalField();
 
             // Compute limiter values, internal faces
             forAll (owner, faceI)
@@ -328,8 +331,8 @@ public:
                 (
                     phiLimiterIn[own],
                     cellVolume[own],
-                    zeroValue,
-                    zeroValue,
+                    phiMaxIn[own],
+                    phiMinIn[own],
                     (deltaRLeft & gradPhiIn[own])
                 );
 
@@ -338,8 +341,8 @@ public:
                 (
                     phiLimiterIn[nei],
                     cellVolume[nei],
-                    zeroValue,
-                    zeroValue,
+                    phiMaxIn[nei],
+                    phiMinIn[nei],
                     (deltaRRight & gradPhiIn[nei])
                 );
             }
@@ -372,8 +375,8 @@ public:
                         (
                             phiLimiterIn[curFC],
                             cellVolume[curFC],
-                            zeroValue,
-                            zeroValue,
+                            phiMaxIn[curFC],
+                            phiMinIn[curFC],
                             (deltaR[faceI] & gradPhiLeft[faceI])
                         );
                     }

@@ -255,6 +255,14 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
     // Create a data structure for storing local contributions
     dataStruct localData;
 
+    // Store min and max values from neighbourhood
+    volScalarField pMinValue("pMinValue", p_);
+    volScalarField pMaxValue("pMaxValue", p_);
+    volVectorField UMinValue("UMinValue", U_);
+    volVectorField UMaxValue("UMaxValue", U_);
+    volScalarField TMinValue("TMinValue", T_);
+    volScalarField TMaxValue("TMaxValue", T_);
+
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
     {
@@ -284,6 +292,13 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
         gradU_[own] += Sf[faceI]*(U_[nei] - localData.UNei);
         gradT_[own] += Sf[faceI]*(T_[nei] - localData.TNei);
 
+        pMinValue[own] = min(pMinValue[own], p_[nei] - localData.pNei);
+        pMaxValue[own] = max(pMaxValue[own], p_[nei] - localData.pNei);
+        UMinValue[own] = min(UMinValue[own], U_[nei] - localData.UNei);
+        UMaxValue[own] = max(UMaxValue[own], U_[nei] - localData.UNei);
+        TMinValue[own] = min(TMinValue[own], T_[nei] - localData.TNei);
+        TMaxValue[own] = max(TMaxValue[own], T_[nei] - localData.TNei);
+
         computePrimitives
         (
             pRight_[faceI],
@@ -305,6 +320,13 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
         gradP_[nei] -= Sf[faceI]*(p_[own] - localData.pNei);
         gradU_[nei] -= Sf[faceI]*(U_[own] - localData.UNei);
         gradT_[nei] -= Sf[faceI]*(T_[own] - localData.TNei);
+
+        pMinValue[nei] = min(pMinValue[nei], p_[own] - localData.pNei);
+        pMaxValue[nei] = max(pMaxValue[nei], p_[own] - localData.pNei);
+        UMinValue[nei] = min(UMinValue[nei], U_[own] - localData.UNei);
+        UMaxValue[nei] = max(UMaxValue[nei], U_[own] - localData.UNei);
+        TMinValue[nei] = min(TMinValue[nei], T_[own] - localData.TNei);
+        TMaxValue[nei] = max(TMaxValue[nei], T_[own] - localData.TNei);
     }
 
     // Update boundary field and values
@@ -403,6 +425,13 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
                 gradU_[own] += pSf[facei]*(pURight[facei] - localData.UNei);
                 gradT_[own] += pSf[facei]*(pTRight[facei] - localData.TNei);
 
+                pMinValue[own] = min(pMinValue[own], ppRight[facei] - localData.pNei);
+                pMaxValue[own] = max(pMaxValue[own], ppRight[facei] - localData.pNei);
+                UMinValue[own] = min(UMinValue[own], pURight[facei] - localData.UNei);
+                UMaxValue[own] = max(UMaxValue[own], pURight[facei] - localData.UNei);
+                TMinValue[own] = min(TMinValue[own], pTRight[facei] - localData.TNei);
+                TMaxValue[own] = max(TMaxValue[own], pTRight[facei] - localData.TNei);
+
                 computePrimitives
                 (
                     ppRight_[facei],
@@ -438,22 +467,36 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
     Field<vector>& igradT = gradT_;
 
     irhoUSource *= volumeInverse_;
-    igradP *= volumeInverse_;
-    igradU *= volumeInverse_;
-    igradT *= volumeInverse_;
+    igradP *= 0.5*volumeInverse_;
+    igradU *= 0.5*volumeInverse_;
+    igradT *= 0.5*volumeInverse_;
+
+    /// TODO: replace 0.5 factor with actual interpolation to faces
 
     rhoUSource_.correctBoundaryConditions();
     gradP_.correctBoundaryConditions();
     gradU_.correctBoundaryConditions();
     gradT_.correctBoundaryConditions();
 
-    // Get limiters
-    MDLimiter<scalar, Foam::BarthJespersenLimiter> scalarPLimiter(gradP_);
-    MDLimiter<vector, Foam::BarthJespersenLimiter> vectorULimiter(gradU_);
-    MDLimiter<scalar, Foam::BarthJespersenLimiter> scalarTLimiter(gradT_);
-//    MDLimiter<scalar, Foam::VenkatakrishnanLimiter> scalarPLimiter(gradP_);
-//    MDLimiter<vector, Foam::VenkatakrishnanLimiter> vectorULimiter(gradU_);
-//    MDLimiter<scalar, Foam::VenkatakrishnanLimiter> scalarTLimiter(gradT_);
+    // Get limiters; alternative: VenkatakrishnanLimiter
+    MDLimiter<scalar, Foam::BarthJespersenLimiter> scalarPLimiter
+    (
+        gradP_,
+        pMaxValue,
+        pMinValue
+    );
+    MDLimiter<vector, Foam::BarthJespersenLimiter> vectorULimiter
+    (
+        gradU_,
+        UMaxValue,
+        UMinValue
+    );
+    MDLimiter<scalar, Foam::BarthJespersenLimiter> scalarTLimiter
+    (
+        gradT_,
+        TMaxValue,
+        TMinValue
+    );
 
     const volScalarField& pLimiter = scalarPLimiter.phiLimiter();
     const volVectorField& ULimiter = vectorULimiter.phiLimiter();

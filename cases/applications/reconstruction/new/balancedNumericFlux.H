@@ -215,9 +215,9 @@ public:
     struct dataStruct
     {
         scalar rhoUSource;
-        scalar pNei;
-        vector UNei;
-        scalar TNei;
+        scalar p;
+        vector U;
+        scalar T;
     };
 
 

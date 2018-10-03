@@ -256,12 +256,19 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
     dataStruct localData;
 
     // Store min and max values from neighbourhood
-    volScalarField pMinValue("pMinValue", p_);
-    volScalarField pMaxValue("pMaxValue", p_);
-    volVectorField UMinValue("UMinValue", U_);
-    volVectorField UMaxValue("UMaxValue", U_);
-    volScalarField TMinValue("TMinValue", T_);
-    volScalarField TMaxValue("TMaxValue", T_);
+    volScalarField pMinValue("pMinValue", p_*scalar(0.0));
+    volScalarField pMaxValue("pMaxValue", p_*scalar(0.0));
+    volVectorField UMinValue("UMinValue", U_*scalar(0.0));
+    volVectorField UMaxValue("UMaxValue", U_*scalar(0.0));
+    volScalarField TMinValue("TMinValue", T_*scalar(0.0));
+    volScalarField TMaxValue("TMaxValue", T_*scalar(0.0));
+
+    Field<scalar>& pMinIn = pMinValue.internalField();
+    Field<scalar>& pMaxIn = pMaxValue.internalField();
+    Field<vector>& UMinIn = UMinValue.internalField();
+    Field<vector>& UMaxIn = UMaxValue.internalField();
+    Field<scalar>& TMinIn = TMinValue.internalField();
+    Field<scalar>& TMaxIn = TMaxValue.internalField();
 
     // Calculate fluxes at internal faces
     forAll (owner, faceI)
@@ -288,16 +295,16 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
 
         // Calculate local momemtum source contribution
         rhoUSource_[own] += Sf[faceI]*localData.rhoUSource;
-        gradP_[own] += Sf[faceI]*(p_[nei] - localData.pNei);
-        gradU_[own] += Sf[faceI]*(U_[nei] - localData.UNei);
-        gradT_[own] += Sf[faceI]*(T_[nei] - localData.TNei);
+        gradP_[own] += Sf[faceI]*(p_[nei] - localData.p);
+        gradU_[own] += Sf[faceI]*(U_[nei] - localData.U);
+        gradT_[own] += Sf[faceI]*(T_[nei] - localData.T);
 
-        pMinValue[own] = min(pMinValue[own], p_[nei] - localData.pNei);
-        pMaxValue[own] = max(pMaxValue[own], p_[nei] - localData.pNei);
-        UMinValue[own] = min(UMinValue[own], U_[nei] - localData.UNei);
-        UMaxValue[own] = max(UMaxValue[own], U_[nei] - localData.UNei);
-        TMinValue[own] = min(TMinValue[own], T_[nei] - localData.TNei);
-        TMaxValue[own] = max(TMaxValue[own], T_[nei] - localData.TNei);
+        pMinIn[own] = min(pMinIn[own], p_[nei] - localData.p);
+        pMaxIn[own] = max(pMaxIn[own], p_[nei] - localData.p);
+        UMinIn[own] = min(UMinIn[own], U_[nei] - localData.U);
+        UMaxIn[own] = max(UMaxIn[own], U_[nei] - localData.U);
+        TMinIn[own] = min(TMinIn[own], T_[nei] - localData.T);
+        TMaxIn[own] = max(TMaxIn[own], T_[nei] - localData.T);
 
         computePrimitives
         (
@@ -317,16 +324,16 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
         );
 
         rhoUSource_[nei] -= Sf[faceI]*localData.rhoUSource;
-        gradP_[nei] -= Sf[faceI]*(p_[own] - localData.pNei);
-        gradU_[nei] -= Sf[faceI]*(U_[own] - localData.UNei);
-        gradT_[nei] -= Sf[faceI]*(T_[own] - localData.TNei);
+        gradP_[nei] -= Sf[faceI]*(p_[own] - localData.p);
+        gradU_[nei] -= Sf[faceI]*(U_[own] - localData.U);
+        gradT_[nei] -= Sf[faceI]*(T_[own] - localData.T);
 
-        pMinValue[nei] = min(pMinValue[nei], p_[own] - localData.pNei);
-        pMaxValue[nei] = max(pMaxValue[nei], p_[own] - localData.pNei);
-        UMinValue[nei] = min(UMinValue[nei], U_[own] - localData.UNei);
-        UMaxValue[nei] = max(UMaxValue[nei], U_[own] - localData.UNei);
-        TMinValue[nei] = min(TMinValue[nei], T_[own] - localData.TNei);
-        TMaxValue[nei] = max(TMaxValue[nei], T_[own] - localData.TNei);
+        pMinIn[nei] = min(pMinIn[nei], p_[own] - localData.p);
+        pMaxIn[nei] = max(pMaxIn[nei], p_[own] - localData.p);
+        UMinIn[nei] = min(UMinIn[nei], U_[own] - localData.U);
+        UMaxIn[nei] = max(UMaxIn[nei], U_[own] - localData.U);
+        TMinIn[nei] = min(TMinIn[nei], T_[own] - localData.T);
+        TMaxIn[nei] = max(TMaxIn[nei], T_[own] - localData.T);
     }
 
     // Update boundary field and values
@@ -421,16 +428,16 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computeFlux()
                 const label own = pFaceCells[facei];
 
                 rhoUSource_[own] += pSf[facei]*localData.rhoUSource;
-                gradP_[own] += pSf[facei]*(ppRight[facei] - localData.pNei);
-                gradU_[own] += pSf[facei]*(pURight[facei] - localData.UNei);
-                gradT_[own] += pSf[facei]*(pTRight[facei] - localData.TNei);
+                gradP_[own] += pSf[facei]*(ppRight[facei] - localData.p);
+                gradU_[own] += pSf[facei]*(pURight[facei] - localData.U);
+                gradT_[own] += pSf[facei]*(pTRight[facei] - localData.T);
 
-                pMinValue[own] = min(pMinValue[own], ppRight[facei] - localData.pNei);
-                pMaxValue[own] = max(pMaxValue[own], ppRight[facei] - localData.pNei);
-                UMinValue[own] = min(UMinValue[own], pURight[facei] - localData.UNei);
-                UMaxValue[own] = max(UMaxValue[own], pURight[facei] - localData.UNei);
-                TMinValue[own] = min(TMinValue[own], pTRight[facei] - localData.TNei);
-                TMaxValue[own] = max(TMaxValue[own], pTRight[facei] - localData.TNei);
+                pMinIn[own] = min(pMinIn[own], ppRight[facei] - localData.p);
+                pMaxIn[own] = max(pMaxIn[own], ppRight[facei] - localData.p);
+                UMinIn[own] = min(UMinIn[own], pURight[facei] - localData.U);
+                UMaxIn[own] = max(UMaxIn[own], pURight[facei] - localData.U);
+                TMinIn[own] = min(TMinIn[own], pTRight[facei] - localData.T);
+                TMaxIn[own] = max(TMaxIn[own], pTRight[facei] - localData.T);
 
                 computePrimitives
                 (
@@ -793,9 +800,9 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computePrimitives
     }
 
     // Use new value of rhoNext to compute other primitives in neighbour cell
-    localData.pNei = K*pow(rhoNext, gamma);
-    localData.UNei = U*rho/rhoNext;
-    localData.TNei = pFace/(rhoNext*R);
+    localData.p = K*pow(rhoNext, gamma);
+    localData.U = U*rho/rhoNext;
+    localData.T = pFace/(rhoNext*R);
 }
 
 

@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < NY; ++i) {
     double y = -2.0 + (i+0.5)*4.0/NY;
-    double Phi = 0.467986600482883*(std::tanh(4.0*y)+1.0);
+    double Phi = 0.467986600482883*(std::tanh(20.0*y)+1.0);
     double rho = computeRho(y, Phi, rhoPrev);
     double p   = 0.75*std::pow(rho, 4.0/3.0);
     double T   = (7.0/5.0)*(p/rho);

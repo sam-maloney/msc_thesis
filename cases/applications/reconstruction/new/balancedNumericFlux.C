@@ -802,7 +802,7 @@ void Foam::numericFlux<Flux, Foam::balancedPotentialLimiter>::computePrimitives
     // Use new value of rhoNext to compute other primitives in neighbour cell
     localData.p = K*pow(rhoNext, gamma);
     localData.U = U*rho/rhoNext;
-    localData.T = pFace/(rhoNext*R);
+    localData.T = localData.p/(rhoNext*R);
 }
 
 

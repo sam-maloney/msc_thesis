@@ -38,7 +38,7 @@ where $\mathbf{U}$ is a vector of the conserved quantities, and $\mathbf{F}$ and
 For fluid flows in the presence of an external potential field, non-trivial steady states (also called stationary solutions) can arise. Highly accurate simulations of these stationary solutions are of interest as they allow for accurate reproduction and analysis of subsequent perturbations to the system, which can be quite small and therefore overwhelmed by the truncation error of a less well-resolved scheme.
 
 It can be seen that for a steady state solution the time derivative term is exactly zero and the balance law~\eqref{eq:euler} reduces to a balance between the fluxes and sources as
-\begin{equation}
+\begin{equation} \label{eq:balance}
 \nabla\cdot(\mathbf{F}(\mathbf{U}))=\mathbf{S}(\mathbf{U}).
 \end{equation}
 In order to reach a unique solution to this balance, some constraint on the thermodynaomics of the system must be specified. Several options are possible depending on the flow scenario to be modelled, with two important classes comprising constant entropy and constant temeprature flows, i.e.~isentropic and isothermal flows, respectively.
@@ -89,14 +89,32 @@ where the adiabatic index $\gamma=C_p/C_v$ is the ratio of specific heats at con
 
 A typical FVM discretizes the domain into small cells (i.e. volumes) and then evolves the cell averages of the conserved quantities by computing their fluxes at all of the faces between adjacent volumes. As the values in adjacent cells differ in general, a Riemann problem will appear at each cell interface which can then be solved to obtain the fluxes. Exact solutions are possible and are the basis of the so-called Godunov schemes~\cite{Godunov1959}, but usually the computational effort is saved by using an approximate solution, such as from a Roe~\cite{Roe1981}, Rusanov~\cite{Rusanov1961}, or HLLC~\cite{Toro1994} solver, as the rest of the method is itself only approximate due to truncation error.
 
+Up to second-order accuracy the cell average value is equivalent to the value at the cell centre, and so some method of approximating the values at the cell interfaces must be selected. As such, a FVM also requires one to specifiy a reconstruction scheme to extend these values stored at the cell centres to the cell edges to obtain the Riemann problem at that interface. A piecewise constant reconstruction where the cell average value is simply used at the interface is the simplest such scheme, but gives only first-order accuracy.
+
+Second-order accuracy can be achieved by computing the gradient at each cell centre and using that to linearly extrapolate to the cell edges. However, this method generally gives rise to spurious oscillations in the resulting solutions, particularly near sharp flow features such as shock fronts. To counter this, most such schemes limit the gradient in areas of rapid change, reducing the local order of accuracy towards first-order. Such schemes are referred to as total variation diminishing (TVD) and various slope limiter functions such as those developed by Barth and Jespersen~\cite{Barth1989}, Venkatakrishnan~\cite{Venkatakrishnan1993,Venkatakrishnan1995}, or Michalak and Gooch~\cite{Michalak2008} can be used.
+
 \subsection{Well-Balanced Reconstruction}
 \label{subsec:wellBalanced}
 
-Up to second-order accuracy the cell average value is equivalent to the value at the cell centre, and so some method of approximating the values at the cell interfaces must be selected. As such, a FVM also requires one to specifiy a reconstruction scheme to extend these values stored at the cell centres to the cell edges to obtain the Riemann problem at that interface. A piecewise constant reconstruction where the cell average value is simply used at the interface is the simplest such scheme, but gives only first-order accuracy.
+It is desirable to develop a scheme for which the flux and source terms of \eqref{eq:balance} cancel each other exactly for an equilibrium stationary solution. Such a method has been developed by KM, termed a well-balanced scheme, and the salient results of their derivations are reproduced here.
 
-Second-order accuracy can be achieved by computing the gradient at each cell centre and using that to linearly extrapolate to the cell edges. However, this method generally gives rise to spurious oscillations in the resulting solutions, particularly near sharp flow features such as shock fronts. To counter this, most such schemes limit the gradient in areas of rapid change, reducing the local order of accuracy towards first-order. Such schemes are referred to as total variation diminishing (TVD) and various slope limiter functions such as those developed by Barth and Jespersen~\cite{Barth1989}, Venkatakrishnan~\cite{Venkatakrishnan1993,Venkatakrishnan1995}, or Michalak and Gooch~\cite{Michalak2008}.
+We use thermodynamic relationships and the equation of state to recast the Bernoulli constant in terms of a single unknown variable, in this case the mass density,
+\begin{equation}
+\frac{1}{2}\frac{m^2}{\rho^2}+\frac{\gamma}{\gamma-1}K\rho^{\gamma-1}+\phi=b,
+\end{equation}
+where we assume the mass flux $m=\rho v$ is also constant.
 
-Therefore, it is desirable to use a scheme for which these terms are exactly balanced for an equilibrium stationary solution. Such a method has been developed by KM, termed a well-balanced scheme, and the salient results of their derivations are reproduced here.
+Thus we have the following primitve values at the cell interfaces as inputs to the Riemann solver
+\begin{equation}
+\mathbf{w}_{i-1/2+}^n=
+\begin{bmatrix}
+p_{0,i}^n(x_{i-1/2}) \\ v_{x,0,i}^n(x_{i-1/2}) \\ T_{0,i}^n(x_{i-1/2})
+\end{bmatrix}
+\quad \textrm{and} \quad \mathbf{w}_{i+1/2-}^n=
+\begin{bmatrix}
+p_{0,i}^n(x_{i+1/2}) \\ v_{x,0,i}^n(x_{i+1/2}) \\ T_{0,i}^n(x_{i+1/2})
+\end{bmatrix}.
+\end{equation}
 
 \subsection{Time Discretization}
 \label{subsec:time}

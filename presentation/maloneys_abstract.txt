@@ -1,0 +1,23 @@
+Title
+-----
+Well-balanced methods for computation of the standing accretion shock 
+instability (SASI)
+
+
+Abstract
+--------
+In astrophysics, accretion shocks are fairly commonly encountered, and in 
+particular, standing accretion shocks (SAS) are part of the theory behind 
+core-collapse supernovae. An instability (SASI) has been proposed as a 
+possible mechanism for driving their explosive evolution, as the spherical 
+system could trap perturbation effects in the interior subsonic region.
+
+For this thesis, a well-balanced method for simulating steady states in the 
+presence of external potential fields, developed by R. Käppeli and S. Mishra, 
+was extended to non-hydrostatic equilibria. This code was then used to 
+simulate a simplified model problem set-up for the SAS to study the 
+interaction of perturbations within the system. The model set-up includes the 
+stationary shock front along with an interior decelerating potential step 
+which is intended to model the effects of matter settling onto the surface of 
+the accreting object. These simulations show evidence for a coupled 
+advective-acoustic cycle within the interior region.

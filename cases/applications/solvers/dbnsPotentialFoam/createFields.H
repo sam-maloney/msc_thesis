@@ -81,18 +81,39 @@
         rho*(h + 0.5*magSqr(U)) - p
     );
 
-
-    // Create numeric flux
-    autoPtr<basicNumericFlux> dbnsFluxPtr = basicNumericFlux::New
-    (
-        p,
-        U,
-        T,
-        rho,
-        potential,
-        thermo()
+    // Store limiter type
+    const word limiterType = word(
+      mesh.schemesDict().subDict("divSchemes").subDict("dbns").lookup("limiter")
     );
+    const bool isBalancedFlux = ( limiterType.substr(0,8) == "balanced" );
+
+    autoPtr<basicNumericFlux> dbnsFluxPtr;
+
+    if ( isBalancedFlux )
+    {
+        // Create balanced numeric flux
+        dbnsFluxPtr = basicNumericFlux::New
+        (
+            potential, // p will be extracted from thermo
+            U,
+            T,
+            thermo()
+        );
+    }
+    else
+    {
+        // Create standard numeric flux
+        dbnsFluxPtr = basicNumericFlux::New
+        (
+            p,
+            U,
+            T,
+            thermo()
+        );
+    }
+
     basicNumericFlux& dbnsFlux = dbnsFluxPtr();
+//    const bool isBalancedFlux = ( dbnsFlux.type() == "balancedNumericFlux" );
 
     // Create mass flux alias for easier coupling with other code components
     const surfaceScalarField& phi = dbnsFlux.rhoFlux();

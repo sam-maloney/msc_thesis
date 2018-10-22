@@ -30,7 +30,7 @@ divSchemes
     {
         flux           rusanov;
 //        limiter        Venkatakrishnan;
-        limiter        balancedPotential;
+        limiter        balancedVenkatakrishnan;
     }
 }
 

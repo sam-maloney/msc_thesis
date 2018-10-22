@@ -701,16 +701,12 @@ dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/betaFlux.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/MDLimiter.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/BarthJespersenLimiter.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/VenkatakrishnanLimiter.H
-dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/MichalakGoochLimiter.H
-dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/finiteVolume/lnInclude/WangLimiter.H
-dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/balancedPotentialLimiter.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/firstOrderLimiter.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/numericFlux.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/numericFluxBase.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/basicNumericFlux.H
-dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/balancedNumericFlux.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/numericFlux.C
-dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/dbns/lnInclude/balancedNumericFlux.C
+dbnsPotentialFoam.dep: balancedFlux/balancedNumericFlux.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/foam/lnInclude/setRootCase.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/foam/lnInclude/createTime.H
 dbnsPotentialFoam.dep: $(WM_PROJECT_DIR)/src/foam/lnInclude/createMesh.H

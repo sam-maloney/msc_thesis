@@ -47,6 +47,7 @@ Author
 #include "BarthJespersenLimiter.H"
 #include "VenkatakrishnanLimiter.H"
 #include "numericFlux.H"
+#include "balancedFlux/balancedNumericFlux.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -72,11 +73,6 @@ int main(int argc, char *argv[])
     // Switch off solver messages
     lduMatrix::debug = 0;
 
-    // Store limiter type
-    const word limiterType = word(
-      mesh.schemesDict().subDict("divSchemes").subDict("dbns").lookup("limiter")
-    );
-
     while (runTime.run())
     {
 #       include "readTimeControls.H"
@@ -101,13 +97,30 @@ int main(int argc, char *argv[])
               + fvc::div(dbnsFlux.rhoFlux())
             );
 
-            if ( limiterType == "balancedPotential" )
+            if ( isBalancedFlux )
             {
+                tmp<DimensionedField<vector, volMesh> > rhoUresid
+                (
+                    new DimensionedField<vector, volMesh>
+                    (
+                        IOobject
+                        (
+                            "rhoUresid",
+                            runTime.timeName(),
+                            mesh,
+                            IOobject::NO_READ,
+                            IOobject::NO_WRITE
+                        ),
+                        mesh,
+                        dimensionSet(1,-2,-2,0,0,0,0),
+                        dbnsFlux.rhoUResidual()()
+                    )
+                );
+
                 solve
                 (
                     1.0/beta[i]*fvm::ddt(rhoU)
-                  + fvc::div(dbnsFlux.rhoUFlux())
-                  - dbnsFlux.rhoUSource()
+                  + rhoUresid // This contains the source contributions
                 );
             }
             else

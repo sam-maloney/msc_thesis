@@ -1,3 +1,0 @@
-balancedNumericFluxes.C
-
-LIB = $(FOAM_USER_LIBBIN)/libbalancedNumericFlux

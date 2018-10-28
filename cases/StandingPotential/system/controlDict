@@ -15,7 +15,6 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 libs (
-      "libdbns.so"
       "libbalancedNumericFlux.so"
       "libsimpleSwakFunctionObjects.so"
       "libswakFunctionObjects.so"

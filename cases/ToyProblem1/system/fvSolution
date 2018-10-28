@@ -18,9 +18,10 @@ solvers
 {
     rho
     {
-        // Used only by the balancedPotentialLimiter
+        // Used by the balanced[...]Limiters
         solver          Newton;
         tolerance       3e-15;
+        maxIter         10000;
     }
 
     rhoU

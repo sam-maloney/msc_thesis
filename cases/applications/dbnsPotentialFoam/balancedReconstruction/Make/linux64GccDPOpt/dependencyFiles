@@ -1,0 +1,4 @@
+DEPENDENCIES = \
+basicBalancedNumericFlux/basicBalancedNumericFlux.dep\
+basicBalancedNumericFlux/newBasicBalancedNumericFlux.dep\
+balancedNumericFlux/balancedNumericFluxes.dep

@@ -1,0 +1,5 @@
+basicBalancedNumericFlux/basicBalancedNumericFlux.C
+basicBalancedNumericFlux/newBasicBalancedNumericFlux.C
+balancedNumericFlux/balancedNumericFluxes.C
+
+LIB = $(FOAM_LIBBIN)/libbalancedReconstruction

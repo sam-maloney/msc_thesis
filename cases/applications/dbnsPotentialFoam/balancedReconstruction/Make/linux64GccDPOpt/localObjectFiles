@@ -1,0 +1,4 @@
+LOCAL_OBJECTS = \
+basicBalancedNumericFlux.o\
+newBasicBalancedNumericFlux.o\
+balancedNumericFluxes.o

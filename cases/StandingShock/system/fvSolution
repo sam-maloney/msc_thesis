@@ -17,7 +17,12 @@ FoamFile
 solvers
 {
     rho
-    {}
+    {
+        // Used by the balanced[...]Limiters
+        solver          Newton;
+        tolerance       2e-15;
+        maxIter         10000;
+    }
 
     rhoU
     {}

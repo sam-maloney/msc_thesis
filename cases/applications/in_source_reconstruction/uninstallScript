@@ -1,0 +1,22 @@
+#!/bin/bash
+read -p "This will overwrite files in $FOAM_SRC/dbns/, do you wish to continure (y/n)? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    # copy original files; modified versions will be overwritten
+    cp ./Original_source/MDLimiter.H $FOAM_SRC/dbns/limiter/
+    cp ./Original_sourc/basicNumericFlux.H $FOAM_SRC/dbns/basicNumericFlux/
+    cp ./Original_sourc/newBasicNumericFlux.C $FOAM_SRC/dbns/basicNumericFlux/
+    cp ./Original_sourc/numericFluxes.C $FOAM_SRC/dbns/numericFlux/
+    cp ./Original_sourc/numericFlux.C $FOAM_SRC/dbns/numericFlux/
+    cp ./Original_sourc/numericFlux.H $FOAM_SRC/dbns/numericFlux/
+    # delete new files
+    rm $FOAM_SRC/dbns/numericFlux/balancedNumericFlux.C
+    rm $FOAM_SRC/dbns/numericFlux/balancedNumericFlux.H
+    rm $FOAM_SRC/dbns/limiter/balancedPotentialLimiter.H
+    # delete symlinks to new files in include directory
+    rm $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.C
+    rm $FOAM_SRC/dbns/lnInclude/balancedNumericFlux.H
+    rm $FOAM_SRC/dbns/lnInclude/balancedPotentialLimiter.H
+    echo "Files restored. Now run the Allwmake script in $FOAM_INST_DIR/foam-extend-4.0/"
+fi

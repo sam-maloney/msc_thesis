@@ -11,7 +11,7 @@
     volScalarField& p = thermo->p();
     const volScalarField& T = thermo->T();
 
-    Info<< "Reading field rho\n" << endl;
+    Info<< "\nReading field rho\n" << endl;
     volScalarField rho
     (
         IOobject
@@ -87,38 +87,37 @@
             .lookup("balanced")
     );
 
-    basicNumericFlux* dbnsFluxPtr;
+    autoPtr<basicNumericFlux> dbnsFluxPtr;
     basicBalancedNumericFlux* balancedDbnsFluxPtr = NULL;
 
     if ( isBalancedFlux )
     {
         // Create balanced numeric flux
-        autoPtr<basicBalancedNumericFlux> dbnsFluxAutoPtr;
-        dbnsFluxAutoPtr = basicBalancedNumericFlux::New
-        (
-            potential,
-            U,
-            rho,
-            thermo()
-        );
-        dbnsFluxPtr = dbnsFluxAutoPtr.ptr();
         balancedDbnsFluxPtr =
-            dynamic_cast<basicBalancedNumericFlux*>(dbnsFluxPtr);
+        (
+            basicBalancedNumericFlux::New
+            (
+                potential,
+                U,
+                rho,
+                thermo()
+            )
+        ).ptr();
+        dbnsFluxPtr.set(dynamic_cast<basicNumericFlux*>(balancedDbnsFluxPtr));
     }
     else
     {
         // Create standard numeric flux
-        autoPtr<basicNumericFlux> dbnsFluxAutoPtr = basicNumericFlux::New
+        dbnsFluxPtr = basicNumericFlux::New
         (
             p,
             U,
             T,
             thermo()
         );
-        dbnsFluxPtr = dbnsFluxAutoPtr.ptr();
     }
 
-    basicNumericFlux& dbnsFlux = *dbnsFluxPtr;
+    basicNumericFlux& dbnsFlux = dbnsFluxPtr();
 
     // Create mass flux alias for easier coupling with other code components
     const surfaceScalarField& phi = dbnsFlux.rhoFlux();

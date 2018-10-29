@@ -18,7 +18,7 @@ solvers
 {
     rho
     {
-        // Used by the balanced[...]Limiters
+        // Used by the balancedNumericFlux class
         solver          Newton;
         tolerance       3e-15;
         maxIter         10000;

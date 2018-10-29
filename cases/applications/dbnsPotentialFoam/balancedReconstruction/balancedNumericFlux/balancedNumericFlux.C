@@ -218,9 +218,7 @@ Foam::balancedNumericFlux<Flux, Limiter>::balancedNumericFlux
                         .subDict("rho").lookup("maxIter")
         )
     )
-{
-    Info << "Constructing balancedNumericFlux" << endl;
-}
+{}
 
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //

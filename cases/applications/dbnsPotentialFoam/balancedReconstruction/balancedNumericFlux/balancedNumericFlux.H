@@ -75,7 +75,7 @@ class balancedNumericFlux
             const volScalarField& T_;
 
             //- Mass density
-            const volScalarField rho_;
+            const volScalarField& rho_;
 
             //- External potential
             const volScalarField& potential_;

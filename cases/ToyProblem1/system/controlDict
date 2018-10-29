@@ -15,7 +15,6 @@ FoamFile
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 libs (
-      "libbalancedNumericFlux.so"
       "libsimpleSwakFunctionObjects.so"
       "libswakFunctionObjects.so"
       "libgroovyBC.so"

@@ -1,4 +1,0 @@
-OBJECTS = \
-$(OBJECTS_DIR)/basicBalancedNumericFlux.o\
-$(OBJECTS_DIR)/newBasicBalancedNumericFlux.o\
-$(OBJECTS_DIR)/balancedNumericFluxes.o

@@ -29,8 +29,8 @@ divSchemes
     dbns
     {
         flux           rusanov;
-        limiter        balancedVenkatakrishnan;
-//        limiter        Venkatakrishnan;
+        limiter        Venkatakrishnan;
+        balanced       true;
     }
 }
 

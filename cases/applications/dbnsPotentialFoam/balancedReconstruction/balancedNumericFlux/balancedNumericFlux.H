@@ -141,9 +141,6 @@ class balancedNumericFlux
             const label maxIter_;
 
 
-        // Gradients: no longer stored.  HJ, 22/Apr/2016
-
-
     // Private Member Functions
 
         //- Disallow default bitwise copy construct
@@ -283,7 +280,7 @@ public:
 
         // Computes primitive values for the given cell face potential
 
-            //- Compute primitives at cell face
+            //- Compute primitives at cell face and neighbour cell centre
             void computePrimitives
             (
                 scalar& pFace,

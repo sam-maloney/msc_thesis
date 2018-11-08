@@ -59,12 +59,6 @@ class basicBalancedNumericFlux
 :
     public basicNumericFlux
 {
-//    // Private data
-//
-//        //- Reference to mesh
-//        const fvMesh& mesh_;
-
-
 protected:
 
     // Protected member functions
@@ -121,48 +115,10 @@ public:
     virtual ~basicBalancedNumericFlux();
 
 
-//    // Member functions
-//
-//        //- Return mesh reference
-//        const fvMesh& mesh() const
-//        {
-//            return mesh_;
-//        }
-//
-//        // Return fluxes
-//
-//            //- Return density flux
-//            virtual const surfaceScalarField& rhoFlux() const = 0;
-//
-//            //- Return velocity flux
-//            virtual const surfaceVectorField& rhoUFlux() const = 0;
-//
-//            //- Return energy flux
-//            virtual const surfaceScalarField& rhoEFlux() const = 0;
-//
-//
-//       // Return residuals
-//
-//            //- Return density equation residual
-//            virtual tmp<scalarField> rhoResidual() const = 0;
-//
-//            //- Return momentum equation flux
-//            virtual tmp<vectorField> rhoUResidual() const = 0;
-//
-//            //- Return energy equation flux
-//            virtual tmp<scalarField> rhoEResidual() const = 0;
-//
-//
-        // Return source terms
+    // Member functions
 
-            //- Return well-balanced momentum source term
-            virtual const volVectorField& rhoUSource() const = 0;
-//
-//
-//        // Update fluxes based on current state
-//
-//            //- Compute flux
-//            virtual void computeFlux() = 0;
+        //- Return well-balanced momentum source term
+        virtual const volVectorField& rhoUSource() const = 0;
 };
 
 

@@ -26,7 +26,7 @@ InClass
 
 Description
     Macros for creating balanced fluxes (including limiters)
-      for DBNS solver with external potential
+    for DBNS solver with external potential
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,22 +38,22 @@ Description
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define makeBasicBalancedNumericFlux(Flux,Limiter)                                    \
+#define makeBasicBalancedNumericFlux(Flux,Limiter)                            \
                                                                               \
 typedef balancedNumericFlux<Flux,Limiter>                                     \
-    Flux##Limiter;                                                  \
+    Flux##Limiter;                                                            \
                                                                               \
 defineTemplateTypeNameAndDebugWithName                                        \
 (                                                                             \
-    Flux##Limiter,                                                  \
-    #Flux#Limiter,                                                  \
+    Flux##Limiter,                                                            \
+    #Flux#Limiter,                                                            \
     0                                                                         \
 );                                                                            \
                                                                               \
 addToRunTimeSelectionTable                                                    \
 (                                                                             \
-    basicBalancedNumericFlux,                                                         \
-    Flux##Limiter,                                                  \
+    basicBalancedNumericFlux,                                                 \
+    Flux##Limiter,                                                            \
     state                                                                     \
 )
 

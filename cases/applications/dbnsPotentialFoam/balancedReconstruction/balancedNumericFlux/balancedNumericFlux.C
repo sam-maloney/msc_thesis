@@ -251,10 +251,24 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
     const volScalarField K = p_ / pow(rho_, gamma);
 
     // Reset momentum source and gradients back to zero
-    rhoUSource_ *= scalar(0.0);
-    gradP_ *= scalar(0.0);
-    gradU_ *= scalar(0.0);
-    gradT_ *= scalar(0.0);
+    Field<vector>& irhoUSource = rhoUSource_;
+    Field<vector>& igradP = gradP_;
+    Field<tensor>& igradU = gradU_;
+    Field<vector>& igradT = gradT_;
+
+//    irhoUSource = vector::zero;
+//    igradP = vector::zero;
+//    igradU = tensor::zero;
+//    igradT = vector::zero;
+
+    rhoUSource_.Field<vector>::operator=(vector::zero);
+    gradP_.Field<vector>::operator=(vector::zero);
+    gradU_.Field<tensor>::operator=(tensor::zero);
+    gradT_.Field<vector>::operator=(vector::zero);
+//    rhoUSource_ *= scalar(0.0);
+//    gradP_ *= scalar(0.0);
+//    gradU_ *= scalar(0.0);
+//    gradT_ *= scalar(0.0);
 
     // Create a data structure for storing local contributions
     dataStruct localData;
@@ -280,6 +294,16 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
         const label own = owner[faceI];
         const label nei = neighbour[faceI];
 
+        // Note: mag in the dot-product.
+        // For all valid meshes, the non-orthogonality will be less that
+        // 90 deg and the dot-product will be positive.  For invalid
+        // meshes (d & s <= 0), this will stabilise the calculation
+        // but the result will be poor.
+        const scalar SfdOwn = mag(Sf[faceI]&(faceCentre[faceI] - cellCentre[own]));
+        const scalar SfdNei = mag(Sf[faceI]&(cellCentre[nei] - faceCentre[faceI]));
+        const scalar weightLeft = SfdOwn/(SfdOwn + SfdNei);
+        const scalar weightRight = SfdNei/(SfdOwn + SfdNei);
+
         computePrimitives
         (
             pLeft_[faceI],
@@ -299,9 +323,9 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
 
         // Calculate local momemtum source contribution
         rhoUSource_[own] += Sf[faceI]*localData.rhoUSource;
-        gradP_[own] += Sf[faceI]*(p_[nei] - localData.p);
-        gradU_[own] += Sf[faceI]*(U_[nei] - localData.U);
-        gradT_[own] += Sf[faceI]*(T_[nei] - localData.T);
+        gradP_[own] += Sf[faceI]*(p_[nei] - localData.p)*weightLeft;
+        gradU_[own] += Sf[faceI]*(U_[nei] - localData.U)*weightLeft;
+        gradT_[own] += Sf[faceI]*(T_[nei] - localData.T)*weightLeft;
 
         pMinIn[own] = min(pMinIn[own], p_[nei] - localData.p);
         pMaxIn[own] = max(pMaxIn[own], p_[nei] - localData.p);
@@ -328,9 +352,9 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
         );
 
         rhoUSource_[nei] -= Sf[faceI]*localData.rhoUSource;
-        gradP_[nei] -= Sf[faceI]*(p_[own] - localData.p);
-        gradU_[nei] -= Sf[faceI]*(U_[own] - localData.U);
-        gradT_[nei] -= Sf[faceI]*(T_[own] - localData.T);
+        gradP_[nei] -= Sf[faceI]*(p_[own] - localData.p)*weightRight;
+        gradU_[nei] -= Sf[faceI]*(U_[own] - localData.U)*weightRight;
+        gradT_[nei] -= Sf[faceI]*(T_[own] - localData.T)*weightRight;
 
         pMinIn[nei] = min(pMinIn[nei], p_[own] - localData.p);
         pMaxIn[nei] = max(pMaxIn[nei], p_[own] - localData.p);
@@ -359,6 +383,7 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
 
         // Face areas
         const fvsPatchVectorField& pSf = Sf.boundaryField()[patchi];
+        const fvsPatchVectorField& pCf = faceCentre.boundaryField()[patchi];
         const unallocLabelList& pFaceCells =
             this->mesh().boundary()[patchi].faceCells();
 
@@ -409,6 +434,11 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
                 potential_.boundaryField()[patchi].patchInternalField();
             const scalarField ppotentialRight =
                 potential_.boundaryField()[patchi].patchNeighbourField();
+            const vectorField pcellCentreLeft  =
+                cellCentre.boundaryField()[patchi].patchInternalField();
+            const vectorField pcellCentreRight =
+                cellCentre.boundaryField()[patchi].patchNeighbourField();
+
 
             forAll (pp, facei)
             {
@@ -429,12 +459,16 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
                     ppotentialRight[facei]
                 );
 
+                const scalar SfdOwn = mag(pSf[facei]&(pCf[facei] - pcellCentreLeft[facei]));
+                const scalar SfdNei = mag(pSf[facei]&(pcellCentreRight[facei] - pCf[facei]));
+                const scalar weightLeft = SfdOwn/(SfdOwn + SfdNei);
+
                 const label own = pFaceCells[facei];
 
                 rhoUSource_[own] += pSf[facei]*localData.rhoUSource;
-                gradP_[own] += pSf[facei]*(ppRight[facei] - localData.p);
-                gradU_[own] += pSf[facei]*(pURight[facei] - localData.U);
-                gradT_[own] += pSf[facei]*(pTRight[facei] - localData.T);
+                gradP_[own] += pSf[facei]*(ppRight[facei] - localData.p)*weightLeft;
+                gradU_[own] += pSf[facei]*(pURight[facei] - localData.U)*weightLeft;
+                gradT_[own] += pSf[facei]*(pTRight[facei] - localData.T)*weightLeft;
 
                 pMinIn[own] = min(pMinIn[own], ppRight[facei] - localData.p);
                 pMaxIn[own] = max(pMaxIn[own], ppRight[facei] - localData.p);
@@ -472,15 +506,10 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
         }
     }
 
-    Field<vector>& irhoUSource = rhoUSource_;
-    Field<vector>& igradP = gradP_;
-    Field<tensor>& igradU = gradU_;
-    Field<vector>& igradT = gradT_;
-
     irhoUSource *= volumeInverse_;
-    igradP *= 0.5*volumeInverse_;
-    igradU *= 0.5*volumeInverse_;
-    igradT *= 0.5*volumeInverse_;
+    igradP *= volumeInverse_;
+    igradU *= volumeInverse_;
+    igradT *= volumeInverse_;
 
     /// TODO: replace 0.5 factor with actual interpolation to faces
 

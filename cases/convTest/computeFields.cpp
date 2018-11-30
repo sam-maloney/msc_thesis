@@ -16,6 +16,7 @@ int main(int argc, char** argv)
   // read # of grid cells from cmd line if present, otherwise use default value
   NX = ( argc > 1 ? std::stoi(argv[1]) : 400 );
   NY = ( argc > 2 ? std::stoi(argv[2]) : 400 );
+  double eps = ( argc > 3 ? std::stod(argv[3]) : 0.0 );
 
   std::fstream pFile, TFile, UFile, PhiFile, rhoFile;
 
@@ -44,15 +45,16 @@ int main(int argc, char** argv)
   writeHeader(  UFile, "U"        , "Vector", 0,  1, -1, 0);
 
   double sigma = 0.2;
-  double mu = 0;
+  double mu = 0.0;
 
   double rhoPrev = 1.0;
 
   for (int i = 0; i < NY; ++i) {
     double y = -2.0 + (i+0.5)*4.0/NY;
-    double Phi = 0.25*y + 0.5;
+//    double Phi = 0.25*y + 0.5;
+    double Phi = 0.467986600482883*(std::tanh(10.0*y)+1.0);
     double rho = computeRho(y, Phi, rhoPrev);
-    rho += 1.0/(sigma*2*M_PI)*std::exp(-0.5*std::pow((y-mu)/sigma,2));
+    rho += eps/(sigma*2*M_PI)*std::exp(-0.5*std::pow((y-mu)/sigma,2));
     double p   = 0.75*std::pow(rho, 4.0/3.0);
     double T   = (7.0/5.0)*(p/rho);
     double U   = -0.394688351072542/rho;
@@ -68,15 +70,40 @@ int main(int argc, char** argv)
     rhoPrev = rho;
   }
 
-  writeFooter(PhiFile, "fixedValue;\n        value           uniform 1",
+//  std::string waveOutCond = "waveTransmissive;\n";
+//  waveOutCond += "        correctSupercritical off;\n";
+//  waveOutCond += "        inletOutlet     off;\n";
+//  waveOutCond += "        gamma           4.0/3.0;\n";
+//  waveOutCond += "        phi             phi;\n";
+//  waveOutCond += "        rho             rho;\n";
+//  waveOutCond += "        psi             psi;\n";
+//  waveOutCond += "        lInf            0.05;\n";
+//
+//  std::string pOutCond = waveOutCond;
+//  pOutCond += "        field           p;\n";
+//  pOutCond += "        fieldInf        2.529013440114932;\n";
+//  pOutCond += "        value           uniform 2.529013440114932";
+//
+//  std::string UOutCond = waveOutCond;
+//  UOutCond += "        field           U;\n";
+//  UOutCond += "        fieldInf        (0 -0.158612314779744 0);\n";
+//  UOutCond += "        value           uniform (0 -0.158612314779744 0)";
+//
+//  std::string TOutCond = waveOutCond;
+//  TOutCond += "        field           T;\n";
+//  TOutCond += "        fieldInf        1.422858679912701;\n";
+//  TOutCond += "        value           uniform 1.422858679912701";
+
+  writeFooter(PhiFile, "fixedValue;\n        value           uniform 0.935973200965766",
                        "fixedValue;\n        value           uniform 0");
   writeFooter(rhoFile, "calculated;\n        value           uniform 1",
-                       "zeroGradient");
+                       "calculated;\n        value           uniform 2.37037037037037");
   writeFooter(  TFile, "fixedValue;\n        value           uniform 1.05",
                        "zeroGradient");
   writeFooter(  UFile, "fixedValue;\n        value           uniform (0 -0.394688351072542 0)",
                        "zeroGradient");
-  writeFooter(  pFile, "zeroGradient", "zeroGradient");
+  writeFooter(  pFile, "fixedValue;\n        value           uniform 0.75",
+                       "zeroGradient");
 
   PhiFile.close();
   rhoFile.close();
@@ -89,7 +116,8 @@ int main(int argc, char** argv)
 
 double computeRho(const double y, double Phi, double rhoPrev)
 {
-  double B = 4.077889447236181; // Bernoulli constant at inlet
+//  double B = 4.077889447236181; // Bernoulli constant at inlet
+  double B = 4.013862648201948;
   double rho = rhoPrev;
 
   unsigned int iter = 0;

@@ -1,0 +1,4 @@
+extrapolatedGradientFvPatchScalarField.C
+extrapolatedGradientFvPatchVectorField.C
+
+LIB = $(FOAM_LIBBIN)/libextrapolatedGradient

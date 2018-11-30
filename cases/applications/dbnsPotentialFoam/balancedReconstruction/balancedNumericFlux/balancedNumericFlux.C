@@ -256,19 +256,10 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
     Field<tensor>& igradU = gradU_;
     Field<vector>& igradT = gradT_;
 
-//    irhoUSource = vector::zero;
-//    igradP = vector::zero;
-//    igradU = tensor::zero;
-//    igradT = vector::zero;
-
     rhoUSource_.Field<vector>::operator=(vector::zero);
     gradP_.Field<vector>::operator=(vector::zero);
     gradU_.Field<tensor>::operator=(tensor::zero);
     gradT_.Field<vector>::operator=(vector::zero);
-//    rhoUSource_ *= scalar(0.0);
-//    gradP_ *= scalar(0.0);
-//    gradU_ *= scalar(0.0);
-//    gradT_ *= scalar(0.0);
 
     // Create a data structure for storing local contributions
     dataStruct localData;
@@ -295,7 +286,7 @@ void Foam::balancedNumericFlux<Flux, Limiter>::computeFlux()
         const label nei = neighbour[faceI];
 
         // Note: mag in the dot-product.
-        // For all valid meshes, the non-orthogonality will be less that
+        // For all valid meshes, the non-orthogonality will be less than
         // 90 deg and the dot-product will be positive.  For invalid
         // meshes (d & s <= 0), this will stabilise the calculation
         // but the result will be poor.

@@ -48,13 +48,47 @@ int main(int argc, char** argv)
   double mu = 0.0;
 
   double rhoPrev = 1.0;
+  double Phi = 0.0;
 
   for (int i = 0; i < NY; ++i) {
     double y = -2.0 + (i+0.5)*4.0/NY;
-//    double Phi = 0.25*y + 0.5;
-    double Phi = 0.467986600482883*(std::tanh(10.0*y)+1.0);
+
+//    /// quadratic connected linear
+//    if        ( y < -1.5 ) {
+//      Phi = 0.0; // left constant region
+//    } else if ( y < -1.0 ) {
+//      Phi = 0.4*y*y + 1.2*y + 0.9; // left quadratic transition
+//    } else if ( y <  1.0 ) {
+//      Phi = 0.4*y + 0.5; // linear centre region
+//    } else if ( y <  1.5 ) {
+//      Phi = -0.4*y*y + 1.2*y + 0.1; // right quadratic transition
+//    } else {
+//      Phi = 1.0;// right constant region
+//    }
+
+//    /// opposing cubics
+//    if        ( y < -1.5 ) {
+//      Phi = 0.0; // left constant region
+//    } else if ( y < 0 ) {
+//      Phi = (148.0/999.0)*y*y*y + (2.0/3.0)*y*y + y + 0.5; // left cubic
+//    } else if ( y < 1.5 ) {
+//      Phi = (148.0/999.0)*y*y*y - (2.0/3.0)*y*y + y + 0.5; // right cubic
+//    } else {
+//      Phi = 1.0;// right constant region
+//    }
+
+    /// quintic
+    if        ( y < -1.5 ) {
+      Phi = 0.0; // left constant region
+    } else if ( y <  1.5 ) {
+      Phi = (2.0/81.0)*y*y*y*y*y - (5.0/27.0)*y*y*y + 0.625*y + 0.5; // left cubic
+    } else {
+      Phi = 1.0;// right constant region
+    }
+
+//    double Phi = 0.467986600482883*(std::tanh(2.0*y)+1.0) + offset;
     double rho = computeRho(y, Phi, rhoPrev);
-    rho += eps/(sigma*2*M_PI)*std::exp(-0.5*std::pow((y-mu)/sigma,2));
+    rho += eps/(2*sigma*std::sqrt(2*M_PI))*std::exp(-0.5*std::pow((y-mu)/sigma,2));
     double p   = 0.75*std::pow(rho, 4.0/3.0);
     double T   = (7.0/5.0)*(p/rho);
     double U   = -0.394688351072542/rho;
@@ -94,15 +128,15 @@ int main(int argc, char** argv)
 //  TOutCond += "        fieldInf        1.422858679912701;\n";
 //  TOutCond += "        value           uniform 1.422858679912701";
 
-  writeFooter(PhiFile, "fixedValue;\n        value           uniform 0.935973200965766",
+  writeFooter(PhiFile, "fixedValue;\n        value           uniform 1",
                        "fixedValue;\n        value           uniform 0");
   writeFooter(rhoFile, "calculated;\n        value           uniform 1",
-                       "calculated;\n        value           uniform 2.37037037037037");
+                       "calculated;\n        value           uniform 2.488384030083816");
   writeFooter(  TFile, "fixedValue;\n        value           uniform 1.05",
                        "zeroGradient");
   writeFooter(  UFile, "fixedValue;\n        value           uniform (0 -0.394688351072542 0)",
                        "zeroGradient");
-  writeFooter(  pFile, "fixedValue;\n        value           uniform 0.75",
+  writeFooter(  pFile, "zeroGradient",
                        "zeroGradient");
 
   PhiFile.close();
@@ -116,8 +150,8 @@ int main(int argc, char** argv)
 
 double computeRho(const double y, double Phi, double rhoPrev)
 {
-//  double B = 4.077889447236181; // Bernoulli constant at inlet
-  double B = 4.013862648201948;
+  double B = 4.077889447236181; // Bernoulli constant at inlet
+//  double B = 4.013862648201948;
   double rho = rhoPrev;
 
   unsigned int iter = 0;

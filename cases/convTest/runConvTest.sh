@@ -16,7 +16,7 @@ for dir in *x/; do
     ./computeFields 1 $N $3
     dbnsPotentialFoam > log
     sample > /dev/null
-    cp sets/0.5/lineY_rho.xy "../$1$2$3/${N}_rho"
+    cp sets/1/lineY_rho.xy "../$1$2$3/${N}_rho"
     cd ..
 done
 ./fixRhoSamples.sh "$1$2$3"

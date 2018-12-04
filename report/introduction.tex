@@ -2,8 +2,9 @@
 \newcommand{\package}{\emph}
 
 \chapter{Introduction}
+\label{chap:introduction}
 
-In the study of astrophysical entities, accretion shocks are a fairly commonly encountered physical phenomena. In particular, standing accretion shocks (SAS) are part of the theory behind core-collapse supernovae, with an instability (SASI) described by Blondin et al.~\cite{Blondin2003} being proposed as a possible mechanism for driving the explosive evolution of these phsyical systems. This instability occurs because of the spherical nature of the system, with the effects of perturbations to the symmetry of the shock being trapped in the interior subsonic region and producing feedback loops which further perturb the shock front.
+In the study of astrophysical entities, accretion shocks are a fairly commonly encountered physical phenomena. In particular, standing accretion shocks (SAS) are part of the theory behind core-collapse supernovae, with an instability (SASI) described by Blondin et al.~\cite{Blondin2003} being proposed as a possible mechanism for driving the explosive evolution of these physical systems. This instability occurs because of the spherical nature of the system, with the effects of perturbations to the symmetry of the shock being trapped in the interior subsonic region and producing feedback loops which further perturb the shock front.
 
 To gain a better understanding of the underlying mechanisms of this instability, Foglizzo~\cite{Foglizzo2009} and Sato et al.~\cite{Sato2009} (hereafter referred to together as FS) proposed and studied a simple toy problem, the details of which are presented in Section \ref{sec:toyProblem}. Using this simple set-up they showed evidence for a coupled advective-acoustic cycle between the stationary shock front and an interior decelerating potential step that is intended to model the effects of matter settling onto the surface of the accreting object. This potential step is of particular note in that it gives rise to non-trivial steady state flows which may not be adequately simulated by standard numeric schemes.
 
@@ -25,7 +26,7 @@ where $\rho$ is the mass density, and $\mathbf{v}$ is the local velocity vector.
 \begin{equation}
 E=\rho e + \frac{\rho \mathrm{v}^2}{2}.
 \end{equation}
-An equation of state $p=p(\rho,e)$ must be selected for a given problem to complete the relations between these primitive quanitites. The quantitiy $\phi$ on the right-hand side of the latter two equations represents an external potential field (e.g.\ gravity) which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given function, through pre-computation, or by solving for it independently of the other fluid quantities at each time step.
+An equation of state $p=p(\rho,e)$ must be selected for a given problem to complete the relations between these primitive quanitites. The quantitiy $\phi$ on the right-hand side of the latter two equations represents a potential field, such as gravity, which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given function, through pre-computation, or by solving for it independently of the other fluid quantities at each time step.
 
 The Euler system of equations can be rewritten in the condensed form of a general balance law as
 \begin{equation} \label{eq:euler}
@@ -41,7 +42,7 @@ For a steady state solution the time derivative term is exactly zero and it can 
 \begin{equation} \label{eq:balance}
 \nabla\cdot(\mathbf{F}(\mathbf{U}))=\mathbf{S}(\mathbf{U}).
 \end{equation}
-In order to find a unique numerical solution to this balance, some constraint on the thermodynaomics of the system must be specified. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
+In order to find a unique numerical solution to this balance, some constraint on the thermodynamics of the system must be specified. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
 \begin{equation}
 \frac{\mathrm{v}^2}{2}+\phi+h=\textrm{constant}\equiv b
 \end{equation}
@@ -94,7 +95,7 @@ Second-order accuracy can be achieved by computing the gradient at each cell cen
 \subsection{Well-Balanced Reconstruction}
 \label{subsec:wellBalanced}
 
-Standard reconstructions as outlined above do not generally preserve equilibrium states exactly, but merely converge towards the precise statinoary solution with increasing grid resolution. Particularly for small perturbations, this global error can dominate small features, which then require prohibitvely small cell sizes to be adequately resolved. It is therefore desirable to develop a scheme for which the flux and source terms of~\eqref{eq:balance} cancel each other exactly for an equilibrium stationary solution. Such a method has been developed for hydrostatic flows by KM, termed a well-balanced scheme, and the salient results of their derivations are here reproduced and extended to non-hydrostatic equilibria. For simplicity, the concrete case of an isentropic flow will be used here, although it is stressed that the fundamental ideas of the following well-balanced scheme are equally applicable to other entropy conditions.
+Standard reconstructions as outlined above do not generally preserve equilibrium states exactly, but merely converge towards the precise stationary solution with increasing grid resolution. Particularly for small perturbations, this global error can dominate small features, which then require prohibitvely small cell sizes to be adequately resolved. It is therefore desirable to develop a scheme for which the flux and source terms of~\eqref{eq:balance} cancel each other exactly for an equilibrium stationary solution. Such a method has been developed for hydrostatic flows by KM, termed a well-balanced scheme, and the salient results of their derivations are here reproduced and extended to non-hydrostatic equilibria. For simplicity, the concrete case of an isentropic flow will be used here, although it is stressed that the fundamental ideas of the following well-balanced scheme are equally applicable to other thermodynamic conditions.
 
 We will use the thermodynamic definitions of the specific enthalpy~\eqref{eq:enthalpy} and specific energy
 \begin{equation}
@@ -134,17 +135,19 @@ as inputs to the chosen Riemann solver at the cell interfaces.
 
 To achieve exact balancing of the source and flux terms, we require that the diexcretizations are not only consistent, but also that the constants and higher order terms of the Taylor expansions precisely match. Following KM, the definitions used for the source terms are
 \begin{align}
-S_{\rho \mathrm{v},i}^n&=\frac{\left(\rho_{0,i}^n(\mathrm{v}_{x,0,i}^n)^2+p_{0,i}^n\right)_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:momentumSource} \\
+S_{\rho \mathrm{v},i}^n&=\frac{\left[\rho_{0,i}^n(\mathrm{v}_{x,0,i}^n)^2+p_{0,i}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:momentumSource} \\
 S_{E,i}^n&=-\rho \mathrm{v}_{x,i}^n\frac{\phi_{i+1}-\phi_{i-1}}{2\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \mathrm{v}_x \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:energySource}
 \end{align}
-which are both spatially second-order accurate approximations of the source terms in~\eqref{eq:euler1D}, but are specifically chosen such that the higher order error terms will precisely cancel those of the corresponding numerical flux approximations for equilibirum flows. Together these discretizations give the source vector
+where the notation $\left[f(x)\right]_a^b\equiv f(x=b)-f(x=a)$ is used for the momentum source term.
+
+Both of these are spatially second-order accurate approximations of the source terms in~\eqref{eq:euler1D}, but are specifically chosen such that the higher order error terms will precisely cancel those of the corresponding numerical flux approximations for equilibirum flows. Together these discretizations give the source vector
 \begin{equation}
 \mathbf{S}_i^n=
 \begin{bmatrix}
 0 \\ S_{\rho \mathrm{v},i}^n \\ S_{E,i}^n
 \end{bmatrix}.
 \end{equation}
-Combining the above source vector with the primitives of~\eqref{eq:primitives1D1} gives a well-balanced scheme which will exactly preserve a given equilibrium state to machine precision, provided the potential is either fully known or resonably resolved by the given grid. The scheme will, however, only model perturbations of the equilibrium with first-order accuracy in space.
+Combining the above source vector with the primitives of~\eqref{eq:primitives1D1} gives a well-balanced scheme which will exactly preserve a given equilibrium state to machine precision, provided the potential is either fully known or defined discretely on the given grid. The scheme will, however, only model perturbations of the equilibrium with first-order accuracy in space.
 
 \subsection{Extension to Second Order}
 \label{subsec:secondOrder}
@@ -279,13 +282,13 @@ The source terms can now be split into a sum of components from the individual d
 where the momentum source terms are given by
 \begin{align}
 \begin{split}
-S_{x,\rho \textrm{v},i,j}&=\frac{\left(\rho_{0,i,j}^n(\mathrm{v}_{0,i,j}^n)^2+p_{0,i,j}^n\right)_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x} \quad \textrm{and} \\
-S_{y,\rho \textrm{v},i,j}&=\frac{\left(\rho_{0,i,j}^n(\mathrm{v}_{0,i,j}^n)^2+p_{0,i,j}^n\right)_{y_{j-1/2}}^{y_{j+1/2}}}{\Delta y},
+S_{x,\rho \textrm{v},i,j}&=\frac{\left[\rho_{0,i,j}^n(\mathrm{v}_{0,i,j}^n)^2+p_{0,i,j}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x} \quad \textrm{and} \\
+S_{y,\rho \textrm{v},i,j}&=\frac{\left[\rho_{0,i,j}^n(\mathrm{v}_{0,i,j}^n)^2+p_{0,i,j}^n\right]_{y_{j-1/2}}^{y_{j+1/2}}}{\Delta y},
 \end{split}
 \end{align}
 and the energy source terms are given by
 \begin{equation}
-S_{x,E,i,j}^n=-\rho \mathrm{v}_{x,i,j}^n\frac{\phi_{i+1,j}-\phi_{i-1,j}}{2\Delta x} \quad \textrm{and} \quad S_{y,E,i,j}^n=-\rho \mathrm{v}_{y,i,j}^n\frac{\phi_{1,j+1}-\phi_{i,j-1}}{2\Delta y}.
+S_{x,E,i,j}^n=-\rho \mathrm{v}_{x,i,j}^n\frac{\phi_{i+1,j}-\phi_{i-1,j}}{2\Delta x} \quad \textrm{and} \quad S_{y,E,i,j}^n=-\rho \mathrm{v}_{y,i,j}^n\frac{\phi_{i,j+1}-\phi_{i,j-1}}{2\Delta y}.
 \end{equation}
 These source discretizations are again second-order accurate as in the 1D case, and combined with~\eqref{eq:primitives2D1} they give a scheme which is precisely equilibrium preserving but only first-order accurate for modelling deviations from the steady state.
 

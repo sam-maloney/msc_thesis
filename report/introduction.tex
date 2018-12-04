@@ -42,7 +42,7 @@ For a steady state solution the time derivative term is exactly zero and it can 
 \begin{equation} \label{eq:balance}
 \nabla\cdot(\mathbf{F}(\mathbf{U}))=\mathbf{S}(\mathbf{U}).
 \end{equation}
-In order to find a unique numerical solution to this balance, some constraint on the thermodynamics of the system must be specified. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
+In order to find a unique numerical solution to this balance, some constraint on the thermodynamics of the system must be specified. Several options are possible depending on the flow scenario to be modelled, with two important classes comprising constant entropy and constant temeprature flows, i.e.~isentropic and isothermal flows, respectively. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
 \begin{equation}
 \frac{\mathrm{v}^2}{2}+\phi+h=\textrm{constant}\equiv b
 \end{equation}
@@ -56,7 +56,7 @@ This constancy can then be leveraged in a computational scheme to find the uniqu
 \section{Numerical Methods}
 \label{sec:numerics}
 
-It is well-studied that the non-linear nature of the Euler equations~\eqref{eq:eulerFull} can lead to very complicated flow features, such as turbulence and shocks, even from initially smooth conditions. As such, numerical solutions to these systems can only be found in a weak sense and require not only initial and boundary conditions, but also some other thermodynamic information in order to fix a unique solution. Several options are possible depending on the flow scenario to be modelled, with two important classes comprising constant entropy and constant temeprature flows, i.e.~isentropic and isothermal flows, respectively. Many methods have already been developed and well-studied to resolve such flows in a stable and consistent manner, with the class of finite volume methods (FVM) being one of the most popular for conservation laws.
+It is well-studied that the non-linear nature of the Euler equations~\eqref{eq:eulerFull} can lead to very complicated flow features, such as turbulence and shocks, even from initially smooth conditions. As such, numerical solutions to these systems can only be found in a weak sense and require not only initial and boundary conditions, but also additional entropy conditions in order to fix a unique, physically-admissible solution. Many methods have already been developed and well-studied to resolve such flows in a stable and consistent manner, with the class of finite volume methods (FVM) being one of the most popular for conservation laws.
 
 \subsection{Spatial Discretization}
 \label{subsec:space}
@@ -86,11 +86,27 @@ p=\rho e(\gamma-1),
 \end{equation}
 where the adiabatic index $\gamma=C_p/C_v$ is the ratio of specific heats at constant pressure and volume, respectively.
 
-A typical FVM discretizes the domain into small cells (i.e. volumes) which in 1D can be denoted $I_i=[x_{i-1/2},x_{i+1/2}]$ and for simplicity will be assumed to be of unform size $\Delta x=x_{i+1/2}-x_{i-1/2}$. The cell averages of the conserved quantities are then evolved in time by computing their fluxes at all of the faces between adjacent volumes. As the values in adjacent cells differ in general, a Riemann problem arises at each cell interface, which can then be solved to obtain the fluxes. Exact solutions are possible, and are the basis of the so-called Godunov schemes~\cite{Godunov1959}, but usually the computational effort is saved by using an approximate solution, such as from a Roe~\cite{Roe1981}, Rusanov~\cite{Rusanov1961}, or HLLC~\cite{Toro1994} solver, as the remainder of the method will be itself only approximate due to truncation error.
+A typical FVM discretizes the domain into small cells (i.e. volumes) which in 1D can be denoted $I_i=[x_{i-1/2},x_{i+1/2}]$ and for simplicity will be assumed to be of unform size $\Delta x=x_{i+1/2}-x_{i-1/2}$. One then integrates over a given cell $I_i$ and timestep $\Delta t^n=t^{n+1}-t^n$ (also assumed constant) to obtain
+\begin{equation}
+\mathbf{U}_i^{n+1}=\mathbf{U}_i^n-\frac{\Delta t}{\Delta x}\left(\mathbf{F}_{i+1/2}^n-\mathbf{F}_{i-1/2}^n\right)+\Delta t\mathbf{S}_i^n.
+\end{equation}
+The ratio of the timestep and grid spacing $\Delta t/\Delta x$ generally must fulfill some CFL condition for stability, and $\mathbf{U}_i^n$ and $\mathbf{U}_i^{n+1}$ are the cell averages of the conserved quantity vectors, which are then evolved in time by computing their fluxes at all of the faces between adjacent volumes.
 
-Up to second-order accuracy the cell average value is equivalent to the value at the cell centre and so we will treat the two as interchangeable in the following, as only first- and second-order accuracy will be explored. With this, an FVM then also requires one to specifiy a reconstruction scheme to extend these values stored at the cell centres to the cell faces to obtain the Riemann problem at that interface. A piecewise constant reconstruction, where the cell average value is simply used also at the interface, is the simplest such scheme but gives only first-order accuracy.
+As the values in these adjacent cells differ in general, a Riemann problem arises at each cell interface, which can then be solved to obtain the fluxes as
+\begin{equation} \label{eq:fluxFunction}
+\mathbf{F}_{i+1/2}^n=\bm{\mathcal{F}}\left(\mathbf{w}_{i+1/2-}^n,\mathbf{w}_{i+1/2+}^n\right),
+\end{equation}
+where $\mathbf{w}_{i+1/2-}^n$ and $\mathbf{w}_{i+1/2+}^n$ are the vectors of primitive variables that have been extrapolated from the cell centres at $x_i$ and $x_{i+1}$, denoted with a trailing `$-$' and `$+$' respectively, to the interface at $x_{i+1/2}$. This means that an FVM requires one to specifiy this reconstruction scheme to extend the solution values stored at the cell centres to the cell faces to obtain the Riemann problem at that interface. A piecewise constant reconstruction
+\begin{equation}
+\mathbf{w}_i^n(x)=\mathbf{w}_i^n,\quad x\in I_i,
+\end{equation}
+where the cell average value is simply used also at the interface, is the simplest such scheme but gives only first-order accuracy.
 
 Second-order accuracy can be achieved by computing the gradient at each cell centre and using that to linearly extrapolate to the cell faces. However, this method generally gives rise to spurious oscillations in the resulting solutions, particularly near sharp flow features such as shock fronts. To counter this, most such schemes limit the gradient in areas of rapid change, reducing the local order of accuracy towards first-order. These limited schemes are referred to as total variation diminishing (TVD) and various slope limiter functions, such as those developed by Barth and Jespersen~\cite{Barth1989}, Venkatakrishnan~\cite{Venkatakrishnan1993,Venkatakrishnan1995}, or Michalak and Gooch~\cite{Michalak2008}, can be used.
+
+Exact solutions of the flux problems in~\eqref{eq:fluxFunction} are possible, and are the basis of the so-called Godunov schemes~\cite{Godunov1959}, but usually the computational effort is saved by using an approximate solution, such as from a Roe~\cite{Roe1981}, Rusanov~\cite{Rusanov1961}, or HLLC~\cite{Toro1994} solver, as the remainder of the method will be itself only approximate due to truncation error. For the following well-balanced schemes, one requires only that the chosen flux function $\bm{\mathcal{F}}$ be Lipschitz continuous and consistent, i.e.~$\bm{\mathcal{F}}(\mathbf{w},\mathbf{w})=\mathbf{F}(\mathbf{w})$, as are the aforementiod examples.
+
+Lastly, up to second-order accuracy the cell average value is equivalent to the value at the cell centre, and so we will treat the two as interchangeable in the following, as only first- and second-order accuracy will be explored. 
 
 \subsection{Well-Balanced Reconstruction}
 \label{subsec:wellBalanced}
@@ -111,10 +127,24 @@ where $K=K(s)$ is only a function of the entropy $s$, and so is constant for ise
 \end{equation}
 where the continuity equation~\eqref{eq:eulerContinuity} for a steady state shows that the mass flux $m=\rho \mathrm{v}_x$ is also constant.
 
-All of the constant values in~\eqref{eq:bernoulli} can be computed for a given cell $i$ and timestep $n$ using the stored cell-centred values, and then the known variation in $\phi(x)$ can be leveraged to compute the value of $\rho(x)$ throughout the cell as
+All of the constant values in~\eqref{eq:bernoulli} can be computed for a given cell $i$ and timestep $n$ using the stored cell-centred values, and then the the value of $\rho(x)$ throughout the cell can be directly tied to the known variation in $\phi(x)$ as
 \begin{equation}
 \frac{1}{2}\left(\frac{m_i^n}{\rho_{0,i}^n(x)}\right)^2+\frac{\gamma}{\gamma-1}K_i^n\rho_{0,i}^n(x)^{\gamma-1}+\phi(x)=b_i^n.
 \end{equation}
+This relationship is strongly dependent on the form of the equation of state but is in general non-linear; however, one can compute the value of $\rho_{0,i}^n(x)$ at a specific location by using the iterative Newton-Raphson root-finding algorithm
+\begin{equation}
+\rho_{0,i,\alpha+1}^n=\rho_{0,i,\alpha}^n-\frac{f(\rho_{0,i,\alpha}^n)}{f'(\rho_{0,i,\alpha}^n)},
+\end{equation}
+where $\alpha=0,1,2,...$ is simply the iteration number. Specifically, the function $f(\rho_\alpha)$ is given by
+\begin{equation}
+f(\rho_{0,i,\alpha}^n)=\frac{1}{2}\left(\frac{m_i^n}{\rho_{0,i,\alpha}^n}\right)^2+\frac{\gamma}{\gamma-1}K_i^n\left(\rho_{0,i,\alpha}^n\right)^{\gamma-1}+\phi-b_i^n=0,
+\end{equation}
+and its derivative $f'(\rho_\alpha)$ as
+\begin{equation}
+f'(\rho_{0,i,\alpha}^n)=-\frac{(m_i^n)^2}{\left(\rho_{0,i,\alpha}^n\right)^3}+\gamma K_i^n\left(\rho_{0,i,\alpha}^n\right)^{\gamma-2}.
+\end{equation}
+A stopping criteria $\left|\rho_{0,i,\alpha+1}^n-\rho_{0,i,\alpha}^n\right|<\epsilon$ for some given tolerance $\epsilon$ is used to determine convergence of the iterations to a solution for $\rho_{0,i}^n$ of arbitrary accuracy at the desired point, limited only by the machine precision. The computational cost intrinsic to such an iterative solution can be mitigated by using the known cell-centre value as the starting guess $\rho_{\alpha=0}$ which should already be quite close to the final solution at the neighbouring cell interfaces in most instances.
+
 This computaton gives the extrapolated values that $\rho(x)$ would have in the area around the $i\textrm{-th}$ cell for a steady state flow, and so is termed the equilibrium value and denoted with a `$0$' subscript. If the potential $\phi(x)$ is a known function, then this allows $\rho_0(x)$ to be computed everywhere in the cell neighbourhood; however, if $\phi(x)$ is also given only discretely at the cell centres, perhaps becuase it is itself computed numerically in a separate calculation, then it must be interpolated to the desired reconstruction points (i.e. the cell faces) in order to compute $\rho_0$ there. A second order accurate piece-wise linear interpolation is generally sufficient, provided the underlying $\phi(x)$ is a continuous function.
 
 Equilibrium reconstruction values for the primitive variables can then be obtained from the computed $\rho_{0,i}^n$, giving

@@ -1,14 +1,14 @@
 % Some commands used in this file
 \newcommand{\package}{\emph}
 
-\chapter{Introduction}
+\chapter{Introduction and Theory}
 \label{chap:introduction}
 
 In the study of astrophysical entities, accretion shocks are a fairly commonly encountered physical phenomena. In particular, standing accretion shocks (SAS) are part of the theory behind core-collapse supernovae, with an instability (SASI) described by Blondin et al.~\cite{Blondin2003} being proposed as a possible mechanism for driving the explosive evolution of these physical systems. This instability occurs because of the spherical nature of the system, with the effects of perturbations to the symmetry of the shock being trapped in the interior subsonic region and producing feedback loops which further perturb the shock front.
 
-To gain a better understanding of the underlying mechanisms of this instability, Foglizzo~\cite{Foglizzo2009} and Sato et al.~\cite{Sato2009} (hereafter referred to together as FS) proposed and studied a simple toy problem, the details of which are presented in Section \ref{sec:toyProblem}. Using this simple set-up they showed evidence for a coupled advective-acoustic cycle between the stationary shock front and an interior decelerating potential step that is intended to model the effects of matter settling onto the surface of the accreting object. This potential step is of particular note in that it gives rise to non-trivial steady state flows which may not be adequately simulated by standard numeric schemes.
+To gain a better understanding of the underlying mechanisms of this instability, Foglizzo~\cite{Foglizzo2009} and Sato et al.~\cite{Sato2009} (hereafter referred to together as FS) proposed and studied a simple toy problem, the details of which are presented in Chapter~\ref{chap:application}. Using this simple set-up they showed evidence for a coupled advective-acoustic cycle between the stationary shock front and an interior decelerating potential step that is intended to model the effects of matter settling onto the surface of the accreting object. This potential step is of particular note in that it gives rise to non-trivial steady state flows which may not be adequately simulated by standard numeric schemes.
 
-For this thesis, therefore, a well-balanced method for simulating steady states in the presence of external potential fields, extended from that developed by K\"appeli and Mishra~\cite{Kappeli2014} (hereafter referred to as KM), was applied to the aforementioned toy problem with an eye to higher dimensional simulations of the SASI scenario using circular and spherical geometries. The mathematical theory of fluid flow and associated steady states is briefly outlined in Section~\ref{sec:euler} while an overview of the numerical method and well-balanced scheme used for this thesis is given in Section~\ref{sec:numerics}. Details of the set-up and results of numerical simulations carried out using our implementation of the well-balanced scheme are presented in Chapter~\ref{chap:results}.
+For this thesis, therefore, a well-balanced method for simulating steady states in the presence of external potential fields, extended from that developed by K\"appeli and Mishra~\cite{Kappeli2014} (hereafter referred to as KM), was applied to the aforementioned toy problem with an eye to higher dimensional simulations of the SASI scenario using circular and spherical geometries. The mathematical theory of fluid flow and associated steady states is briefly outlined in Section~\ref{sec:euler} while an overview of the numerical method and well-balanced scheme used for this thesis is given in Section~\ref{sec:numerics}. Details of the set-up and results of numerical verification simulations carried out using our implementation of the well-balanced scheme are presented in Chapter~\ref{chap:implementation}.
 
 
 \section{Euler Equations}
@@ -24,7 +24,7 @@ The time evolution of the dynamics of fluids can be described by systems of bala
 \end{subequations}
 where $\rho$ is the mass density, and $\mathbf{v}$ is the local velocity vector. $E$ is the total energy sum of the internal and kinetic energies given as
 \begin{equation}
-E=\rho e + \frac{\rho \mathrm{v}^2}{2}.
+E=\rho e + \frac{\rho v^2}{2}.
 \end{equation}
 An equation of state $p=p(\rho,e)$ must be selected for a given problem to complete the relations between these primitive quanitites. The quantitiy $\phi$ on the right-hand side of the latter two equations represents a potential field, such as gravity, which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given function, through pre-computation, or by solving for it independently of the other fluid quantities at each time step.
 
@@ -44,7 +44,7 @@ For a steady state solution the time derivative term is exactly zero and it can 
 \end{equation}
 In order to find a unique numerical solution to this balance, some constraint on the thermodynamics of the system must be specified. Several options are possible depending on the flow scenario to be modelled, with two important classes comprising constant entropy and constant temeprature flows, i.e.~isentropic and isothermal flows, respectively. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
 \begin{equation}
-\frac{\mathrm{v}^2}{2}+\phi+h=\textrm{constant}\equiv b
+\frac{v^2}{2}+\phi+h=\textrm{constant}\equiv b
 \end{equation}
 where $b$ is referred to as the Bernoulli constant and $h$ is the specific enthalpy
 \begin{equation} \label{eq:enthalpy}
@@ -69,18 +69,18 @@ where the vectors of conserved quanitites, and their fluxes and sources are resp
 \begin{equation}
 \mathbf{U}=
 \begin{bmatrix}
-\rho \\ \rho \mathrm{v}_x \\ E
+\rho \\ \rho v_x \\ E
 \end{bmatrix}
 ,\quad \mathbf{F}=
 \begin{bmatrix}
-\rho \mathrm{v}_x \\ \rho \mathrm{v}_x^2+p \\ (E+p)\mathrm{v}_x
+\rho v_x \\ \rho v_x^2+p \\ (E+p)v_x
 \end{bmatrix}
 ,\quad \mathbf{S}=
 \begin{bmatrix}
-0 \\ -\rho \\ -\rho \mathrm{v}_x
+0 \\ -\rho \\ -\rho v_x
 \end{bmatrix} \frac{\partial \phi}{\partial x}.
 \end{equation}
-It is also useful to define a vector of primitive variables $\mathbf{w}=[p,\ \mathrm{v}_x,\ T]^T$. While the methods used here are generally applicable to any choice of the equation of state, the ideal gas law will be assumed here as an example for the derivations. It is given by
+It is also useful to define a vector of primitive variables $\mathbf{w}=[p,\ v_x,\ T]^T$. While the methods used here are generally applicable to any choice of the equation of state, the ideal gas law will be assumed here as an example for the derivations. It is given by
 \begin{equation}
 p=\rho e(\gamma-1),
 \end{equation}
@@ -125,7 +125,7 @@ where $K=K(s)$ is only a function of the entropy $s$, and so is constant for ise
 \begin{equation}
 \frac{1}{2}\frac{m^2}{\rho^2}+\frac{\gamma}{\gamma-1}K\rho^{\gamma-1}+\phi=b, \label{eq:bernoulli}
 \end{equation}
-where the continuity equation~\eqref{eq:eulerContinuity} for a steady state shows that the mass flux $m=\rho \mathrm{v}_x$ is also constant.
+where the continuity equation~\eqref{eq:eulerContinuity} for a steady state shows that the mass flux $m=\rho v_x$ is also constant.
 
 All of the constant values in~\eqref{eq:bernoulli} can be computed for a given cell $i$ and timestep $n$ using the stored cell-centred values, and then the the value of $\rho(x)$ throughout the cell can be directly tied to the known variation in $\phi(x)$ as
 \begin{equation}
@@ -151,11 +151,11 @@ Equilibrium reconstruction values for the primitive variables can then be obtain
 \begin{equation} \label{eq:primitives1D1}
 \mathbf{w}_{i-1/2+}^n=
 \begin{bmatrix}
-p_{0,i}^n(x_{i-1/2}) \\ \mathrm{v}_{x,0,i}^n(x_{i-1/2}) \\ T_{0,i}^n(x_{i-1/2})
+p_{0,i}^n(x_{i-1/2}) \\ v_{x,0,i}^n(x_{i-1/2}) \\ T_{0,i}^n(x_{i-1/2})
 \end{bmatrix}
 \quad \textrm{and} \quad \mathbf{w}_{i+1/2-}^n=
 \begin{bmatrix}
-p_{0,i}^n(x_{i+1/2}) \\ \mathrm{v}_{x,0,i}^n(x_{i+1/2}) \\ T_{0,i}^n(x_{i+1/2})
+p_{0,i}^n(x_{i+1/2}) \\ v_{x,0,i}^n(x_{i+1/2}) \\ T_{0,i}^n(x_{i+1/2})
 \end{bmatrix},
 \end{equation}
 as inputs to the chosen Riemann solver at the cell interfaces.
@@ -165,8 +165,8 @@ as inputs to the chosen Riemann solver at the cell interfaces.
 
 To achieve exact balancing of the source and flux terms, we require that the diexcretizations are not only consistent, but also that the constants and higher order terms of the Taylor expansions precisely match. Following KM, the definitions used for the source terms are
 \begin{align}
-S_{\rho \mathrm{v},i}^n&=\frac{\left[\rho_{0,i}^n(\mathrm{v}_{x,0,i}^n)^2+p_{0,i}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:momentumSource} \\
-S_{E,i}^n&=-\rho \mathrm{v}_{x,i}^n\frac{\phi_{i+1}-\phi_{i-1}}{2\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \mathrm{v}_x \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:energySource}
+S_{\rho v,i}^n&=\frac{\left[\rho_{0,i}^n(v_{x,0,i}^n)^2+p_{0,i}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:momentumSource} \\
+S_{E,i}^n&=-\rho v_{x,i}^n\frac{\phi_{i+1}-\phi_{i-1}}{2\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho v_x \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:energySource}
 \end{align}
 where the notation $\left[f(x)\right]_a^b\equiv f(x=b)-f(x=a)$ is used for the momentum source term.
 
@@ -174,7 +174,7 @@ Both of these are spatially second-order accurate approximations of the source t
 \begin{equation}
 \mathbf{S}_i^n=
 \begin{bmatrix}
-0 \\ S_{\rho \mathrm{v},i}^n \\ S_{E,i}^n
+0 \\ S_{\rho v,i}^n \\ S_{E,i}^n
 \end{bmatrix}.
 \end{equation}
 Combining the above source vector with the primitives of~\eqref{eq:primitives1D1} gives a well-balanced scheme which will exactly preserve a given equilibrium state to machine precision, provided the potential is either fully known or defined discretely on the given grid. The scheme will, however, only model perturbations of the equilibrium with first-order accuracy in space.
@@ -182,7 +182,7 @@ Combining the above source vector with the primitives of~\eqref{eq:primitives1D1
 \subsection{Extension to Second Order}
 \label{subsec:secondOrder}
 
-As first-order accuracy is generally insufficient for most practical problems of interest, the next step is to extend the method to achieve second-order accuracy for perturbations while maintaining the well-balanced properties for the underlying equilibrium. As alluded to at the end of section~\ref{subsec:space}, a TVD slope-limited linear extrapolation is used to improve the reconstruction of the primitives to the cell faces. Using `$q$' as a placeholder for any of the required primitve variables, we thus define a second-order equilibrium-preserving reconstruction $q_i(x)$ in the $i\textrm{-th}$ cell as
+As first-order accuracy is generally insufficient for most practical problems of interest, the next step is to extend the method to achieve second-order accuracy for perturbations while maintaining the well-balanced properties for the underlying equilibrium. As alluded to at the end of Section~\ref{subsec:space}, a TVD slope-limited linear extrapolation is used to improve the reconstruction of the primitives to the cell faces. Using `$q$' as a placeholder for any of the required primitve variables, we thus define a second-order equilibrium-preserving reconstruction $q_i(x)$ in the $i\textrm{-th}$ cell as
 \begin{equation}
 q_i(x)=q_{0,i}(x)+Dq_{1,i}(x-x_i),
 \end{equation}
@@ -207,7 +207,7 @@ The limited slope can then be computed by applying a TVD limiter funtion to the 
 Dq_{1,i}=\textrm{limiter}\left(\frac{q_{1,i}(x_i)-q_{1,i}(x_{i-1})}{\Delta x},\frac{q_{1,i}(x_{i+1})-q_{1,i}(x_i)}{\Delta x}\right).
 \end{equation}
 There are many potential choices of limiter function described in the literature, one of the most common and simple of which is the \emph{minmod} limiter, defined as
-\begin{equation}
+\begin{equation} \label{eq:minmod}
 \textrm{minmod}(a,b)=\frac{1}{2}\left(\textrm{sign}(a)+\textrm{sign}(b)\right)\textrm{min}\left(|a|,|b|\right).
 \end{equation}
 As noted earlier, the perturbation terms will be zero at the current cell centre, and so the final form of the second-order reconstruction simplifies to
@@ -267,58 +267,58 @@ where the conserved quantities, fluxes, and source terms are now given by the fo
 \begin{split}
 \mathbf{U}&=
 \begin{bmatrix}
-\rho \\ \rho \mathrm{v}_x \\ \rho \mathrm{v}_y \\ E
+\rho \\ \rho v_x \\ \rho v_y \\ E
 \end{bmatrix}
 ,\quad \mathbf{F}=
 \begin{bmatrix}
-\rho \mathrm{v}_x \\ \rho \mathrm{v}_x^2+p \\ \rho \mathrm{v}_x \mathrm{v}_y \\ (E+p)\mathrm{v}_x
+\rho v_x \\ \rho v_x^2+p \\ \rho v_x v_y \\ (E+p)v_x
 \end{bmatrix}
 ,\quad \mathbf{G}=
 \begin{bmatrix}
-\rho \mathrm{v}_y \\ \rho \mathrm{v}_x \mathrm{v}_y \\ \rho \mathrm{v}_y^2+p \\ (E+p)\mathrm{v}_y
+\rho v_y \\ \rho v_x v_y \\ \rho v_y^2+p \\ (E+p)v_y
 \end{bmatrix}, \\
 \mathbf{S}&=\mathbf{S}_x+\mathbf{S}_y=
 \begin{bmatrix}
-0 \\ -\rho \\ 0 \\ -\rho \mathrm{v}_x
+0 \\ -\rho \\ 0 \\ -\rho v_x
 \end{bmatrix} \frac{\partial \phi}{\partial x} +
 \begin{bmatrix}
-0 \\ 0 \\ -\rho \\ -\rho \mathrm{v}_y
+0 \\ 0 \\ -\rho \\ -\rho v_y
 \end{bmatrix} \frac{\partial \phi}{\partial y},
 \end{split}
 \end{align}
-and $\mathbf{w}=[p,\ \mathrm{v}_x,\  \mathrm{v}_y,\ T]^T$ is the vector of primitive values.
+and $\mathbf{w}=[p,\ v_x,\  v_y,\ T]^T$ is the vector of primitive values.
 
 Analgously to the 1D case, one starts by computing the equilibrium constants $b_i^n$, $K_i^n$, and $m_i^n$ at the cell centres and using those to extrapolate the local subcell equilibrium to the cell faces based on the changes in the potential $\phi(x,y)$ from the cell centres to the faces. If $\phi(x,y)$ is known only discretely, then a bilinear interpolation will now be needed to determine its value at the cell faces. The first-order primitive vector of inputs to the Riemann solver are then
 \begin{equation} \label{eq:primitives2D1}
 \mathbf{w}_{i\mp1/2\pm,j}^n=
 \begin{bmatrix}
-p_{0,i,j}^n(x_{i\mp1/2},y_j) \\ \mathrm{v}_{x,0,i,j}^n(x_{i\mp1/2},y_j) \\ \mathrm{v}_{y,0,i,j}^n(x_{i\mp1/2},y_j) \\ T_{0,i,j}^n(x_{i\mp1/2},y_j)
+p_{0,i,j}^n(x_{i\mp1/2},y_j) \\ v_{x,0,i,j}^n(x_{i\mp1/2},y_j) \\ v_{y,0,i,j}^n(x_{i\mp1/2},y_j) \\ T_{0,i,j}^n(x_{i\mp1/2},y_j)
 \end{bmatrix}
 , \quad \mathbf{w}_{i,j\mp1/2\pm}^n=
 \begin{bmatrix}
-p_{0,i,j}^n(x_i,y_{j\mp1/2}) \\ \mathrm{v}_{x,0,i,j}^n(x_i,y_{j\mp1/2}) \\ \mathrm{v}_{y,0,,ji}^n(x_i,y_{j\mp1/2}) \\ T_{0,i,j}^n(x_i,y_{j\mp1/2})
+p_{0,i,j}^n(x_i,y_{j\mp1/2}) \\ v_{x,0,i,j}^n(x_i,y_{j\mp1/2}) \\ v_{y,0,,ji}^n(x_i,y_{j\mp1/2}) \\ T_{0,i,j}^n(x_i,y_{j\mp1/2})
 \end{bmatrix}.
 \end{equation}
 The source terms can now be split into a sum of components from the individual dimensions, which are then individually specified similarly as in the 1D case, giving
 \begin{equation}
 \mathbf{S}_{i,j}=\mathbf{S}_{x,i,j}+\mathbf{S}_{y,i,j}=
 \begin{bmatrix}
-0 \\ S_{x,\rho \textrm{v},i,j} \\ 0 \\ S_{x,E,i,j}
+0 \\ S_{x,\rho v,i,j} \\ 0 \\ S_{x,E,i,j}
 \end{bmatrix} +
 \begin{bmatrix}
-0 \\ 0 \\ S_{y,\rho \textrm{v},i,j} \\ S_{y,E,i,j}
+0 \\ 0 \\ S_{y,\rho v,i,j} \\ S_{y,E,i,j}
 \end{bmatrix},
 \end{equation}
 where the momentum source terms are given by
 \begin{align}
 \begin{split}
-S_{x,\rho \textrm{v},i,j}&=\frac{\left[\rho_{0,i,j}^n(\mathrm{v}_{0,i,j}^n)^2+p_{0,i,j}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x} \quad \textrm{and} \\
-S_{y,\rho \textrm{v},i,j}&=\frac{\left[\rho_{0,i,j}^n(\mathrm{v}_{0,i,j}^n)^2+p_{0,i,j}^n\right]_{y_{j-1/2}}^{y_{j+1/2}}}{\Delta y},
+S_{x,\rho v,i,j}&=\frac{\left[\rho_{0,i,j}^n(v_{0,i,j}^n)^2+p_{0,i,j}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x} \quad \textrm{and} \\
+S_{y,\rho v,i,j}&=\frac{\left[\rho_{0,i,j}^n(v_{0,i,j}^n)^2+p_{0,i,j}^n\right]_{y_{j-1/2}}^{y_{j+1/2}}}{\Delta y},
 \end{split}
 \end{align}
 and the energy source terms are given by
 \begin{equation}
-S_{x,E,i,j}^n=-\rho \mathrm{v}_{x,i,j}^n\frac{\phi_{i+1,j}-\phi_{i-1,j}}{2\Delta x} \quad \textrm{and} \quad S_{y,E,i,j}^n=-\rho \mathrm{v}_{y,i,j}^n\frac{\phi_{i,j+1}-\phi_{i,j-1}}{2\Delta y}.
+S_{x,E,i,j}^n=-\rho v_{x,i,j}^n\frac{\phi_{i+1,j}-\phi_{i-1,j}}{2\Delta x} \quad \textrm{and} \quad S_{y,E,i,j}^n=-\rho v_{y,i,j}^n\frac{\phi_{i,j+1}-\phi_{i,j-1}}{2\Delta y}.
 \end{equation}
 These source discretizations are again second-order accurate as in the 1D case, and combined with~\eqref{eq:primitives2D1} they give a scheme which is precisely equilibrium preserving but only first-order accurate for modelling deviations from the steady state.
 
@@ -327,11 +327,11 @@ This can then be improved to second-order by proceeding dimension-by-dimension a
 \begin{split}
 \mathbf{w}_{i\mp1/2\pm,j}^n&=
 \begin{bmatrix}
-p_{0,i,j}^n(x_{i\mp1/2},y_j)+p_{1,i,j}^n(x_{i\mp1/2},y_j) \\ \mathrm{v}_{x,0,i,j}^n(x_{i\mp1/2},y_j)+\mathrm{v}_{x,1,i,j}^n(x_{i\mp1/2},y_j) \\ \mathrm{v}_{y,0,i,j}^n(x_{i\mp1/2},y_j)+\mathrm{v}_{y,1,i,j}^n(x_{i\mp1/2},y_j) \\ T_{0,i,j}^n(x_{i\mp1/2},y_j)+T_{1,i,j}^n(x_{i\mp1/2},y_j)
+p_{0,i,j}^n(x_{i\mp1/2},y_j)+p_{1,i,j}^n(x_{i\mp1/2},y_j) \\ v_{x,0,i,j}^n(x_{i\mp1/2},y_j)+v_{x,1,i,j}^n(x_{i\mp1/2},y_j) \\ v_{y,0,i,j}^n(x_{i\mp1/2},y_j)+v_{y,1,i,j}^n(x_{i\mp1/2},y_j) \\ T_{0,i,j}^n(x_{i\mp1/2},y_j)+T_{1,i,j}^n(x_{i\mp1/2},y_j)
 \end{bmatrix} \quad \textrm{and} \\
 \mathbf{w}_{i,j\mp1/2\pm}^n&=
 \begin{bmatrix}
-p_{0,i,j}^n(x_i,y_{j\mp1/2})+p_{1,i,j}^n(x_i,y_{j\mp1/2}) \\ \mathrm{v}_{x,0,i,j}^n(x_i,y_{j\mp1/2})+\mathrm{v}_{x,1,i,j}^n(x_i,y_{j\mp1/2}) \\ \mathrm{v}_{y,0,,ji}^n(x_i,y_{j\mp1/2})+\mathrm{v}_{y,1,,ji}^n(x_i,y_{j\mp1/2}) \\ T_{0,i,j}^n(x_i,y_{j\mp1/2})+T_{1,i,j}^n(x_i,y_{j\mp1/2})
+p_{0,i,j}^n(x_i,y_{j\mp1/2})+p_{1,i,j}^n(x_i,y_{j\mp1/2}) \\ v_{x,0,i,j}^n(x_i,y_{j\mp1/2})+v_{x,1,i,j}^n(x_i,y_{j\mp1/2}) \\ v_{y,0,,ji}^n(x_i,y_{j\mp1/2})+v_{y,1,,ji}^n(x_i,y_{j\mp1/2}) \\ T_{0,i,j}^n(x_i,y_{j\mp1/2})+T_{1,i,j}^n(x_i,y_{j\mp1/2})
 \end{bmatrix}.
 \end{split}
 \end{align}

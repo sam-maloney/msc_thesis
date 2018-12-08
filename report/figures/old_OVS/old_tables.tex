@@ -1,0 +1,83 @@
+\begin{table*}\centering
+\caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with no perturbation, i.e.\ $A=0$.}
+\ra{1.3}
+\label{table:OVS_A0}
+\begin{tabular}{@{}rcccccc@{}}\toprule
+& \phantom{a} & \multicolumn{2}{c}{First} & \phantom{ab} & \multicolumn{2}{c}{Second}\\
+\cmidrule{3-4} \cmidrule{6-7}
+$N$ && $Err_1$ & Order && $Err_1$ & Order\\ \midrule
+$25$ && 3.47e-02/4.40e-15 &&& 4.51e-03/4.40e-15 &\\
+$50$ && 1.75e-02/4.37e-15 & 0.987/- && 1.12e-03/4.37e-15 & 2.013/-\\
+$100$ && 8.79e-03/4.16e-15 & 0.993/- && 2.77e-04/4.16e-15 & 2.013/-\\
+$200$ && 4.41e-03/3.15e-15 & 0.996/- && 6.88e-05/3.35e-15 & 2.009/-\\
+$400$ && 2.21e-03/3.48e-15 & 0.998/- && 1.71e-05/3.46e-15 & 2.004/-\\
+$800$ && 1.10e-03/2.88e-15 & 0.999/- && 4.28e-06/2.96e-15 & 2.003/-\\
+$1600$ && 5.53e-04/3.05e-14 & 1.000/- && 1.07e-06/6.83e-14 & 2.002/-\\
+$3200$ && 2.76e-04/1.02e-13 & 1.000/- && 2.67e-07/1.20e-13 & 2.001/-\\
+$6400$ && 1.38e-04/7.80e-14 & 1.000/- && 6.67e-08/8.56e-14 & 2.000/-\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}\centering
+\caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with medium perturbation amplitude $A=0.1$.}
+\ra{1.3}
+\label{table:OVS_Amedium}
+\begin{tabular}{@{}rcccccc@{}}\toprule
+& \phantom{a} & \multicolumn{2}{c}{First} & \phantom{ab} & \multicolumn{2}{c}{Second}\\
+\cmidrule{3-4} \cmidrule{6-7}
+$N$ && $Err_1$ & Order && $Err_1$ & Order\\ \midrule
+$25$ && 3.46e-02/1.04e-02 &&& 6.97e-03/4.55e-03 &\\
+$50$ && 1.77e-02/7.69e-03 & 0.96/0.44 && 2.30e-03/1.62e-03 & 1.60/1.49\\
+$100$ && 9.55e-03/5.27e-03 & 0.89/0.55 && 5.83e-04/4.62e-04 & 1.98/1.81\\
+$200$ && 5.22e-03/3.29e-03 & 0.87/0.68 && 1.36e-04/1.10e-04 & 2.10/2.07\\
+$400$ && 2.83e-03/1.89e-03 & 0.88/0.80 && 3.31e-05/2.69e-05 & 2.03/2.03\\
+$800$ && 1.49e-03/1.02e-03 & 0.92/0.88 && 8.75e-06/6.46e-06 & 1.92/2.06\\
+$1600$ && 7.71e-04/5.36e-04 & 0.95/0.94 && 3.39e-06/1.62e-06 & 1.37/2.00\\
+$3200$ && 3.93e-04/2.74e-04 & 0.97/0.97 && 2.62e-06/5.16e-07 & 0.37/1.65\\
+$6400$ && 1.98e-04/1.39e-04 & 0.99/0.98 && 2.45e-06/3.93e-07 & 0.10/0.39\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}\centering
+\caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with very small perturbation amplitude $A=1e-4$.}
+\ra{1.3}
+\label{table:OVS_Asmall}
+\begin{tabular}{@{}rcccccc@{}}\toprule
+& \phantom{a} & \multicolumn{2}{c}{First} & \phantom{ab} & \multicolumn{2}{c}{Second}\\
+\cmidrule{3-4} \cmidrule{6-7}
+$N$ && $Err_1$ & Order && $Err_1$ & Order\\ \midrule
+$25$ && 3.47e-02/1.05e-05 &&& 4.51e-03/4.79e-06 &\\
+$50$ && 1.75e-02/7.83e-06 & 0.99/0.42 && 1.12e-03/1.76e-06 & 2.01/1.44\\
+$100$ && 8.79e-03/5.39e-06 & 0.99/0.54 && 2.77e-04/4.67e-07 & 2.01/1.91\\
+$200$ && 4.41e-03/3.36e-06 & 1.00/0.68 && 6.88e-05/1.10e-07 & 2.01/2.09\\
+$400$ && 2.21e-03/1.93e-06 & 1.00/0.80 && 1.71e-05/2.72e-08 & 2.00/2.01\\
+$800$ && 1.10e-03/1.05e-06 & 1.00/0.88 && 4.28e-06/6.63e-09 & 2.00/2.04\\
+$1600$ && 5.53e-04/5.49e-07 & 1.00/0.94 && 1.07e-06/1.64e-09 & 2.00/2.01\\
+$3200$ && 2.76e-04/2.81e-07 & 1.00/0.97 && 2.68e-07/5.12e-10 & 2.00/1.68\\
+$6400$ && 1.38e-04/1.42e-07 & 1.00/0.98 && 6.80e-08/3.83e-10 & 1.98/0.42\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}\centering
+\caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with very large perturbation amplitude $A=2$.}
+\ra{1.3}
+\label{table:OVS_Alarge}
+\begin{tabular}{@{}rcccccc@{}}\toprule
+& \phantom{a} & \multicolumn{2}{c}{First} & \phantom{ab} & \multicolumn{2}{c}{Second}\\
+\cmidrule{3-4} \cmidrule{6-7}
+$N$ && $Err_1$ & Order && $Err_1$ & Order\\ \midrule
+$25$ && 1.68e-01/1.67e-01 &&& 6.07e-02/6.29e-02 &\\
+$50$ && 1.12e-01/1.12e-01 & 0.58/0.58 && 3.06e-02/3.14e-02 & 0.99/1.00\\
+$100$ && 7.46e-02/7.41e-02 & 0.59/0.60 && 1.47e-02/1.47e-02 & 1.06/1.09\\
+$200$ && 4.54e-02/4.48e-02 & 0.72/0.73 && 5.86e-03/5.86e-03 & 1.32/1.33\\
+$400$ && 2.69e-02/2.67e-02 & 0.76/0.75 && 3.26e-03/3.26e-03 & 0.85/0.84\\
+$800$ && 1.50e-02/1.49e-02 & 0.84/0.85 && 1.40e-03/1.40e-03 & 1.22/1.22\\
+$1600$ && 8.35e-03/8.25e-03 & 0.85/0.85 && 6.57e-04/6.58e-04 & 1.09/1.09\\
+$3200$ && 4.57e-03/4.52e-03 & 0.87/0.87 && 3.15e-04/3.11e-04 & 1.06/1.08\\
+$6400$ && 2.43e-03/2.40e-03 & 0.91/0.91 && 1.32e-04/1.23e-04 & 1.25/1.33\\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -6,7 +6,7 @@
 
 Implementation of the well-balanced method was carried out using the foam-extend 4.0 fork of the OpenFOAM (Open-Source Field Operation And Manipulation) software project. OpenFOAM was selected as it is a mature and feature rich platform for computational fluid dynamics, and thus already provides many utilities and functionality for tasks such as pre- and post-processing data, runtime selection of simulation parameters, and managing very generic meshes. It is coded entirely in object-oriented C++, making it also very flexible for extension.
 
-The foam-extend fork was chosen over the standard OpenFOAM distribution as it includes an additional density-basesd Navier Stokes (DBNS) solver which implements very closely the basic FVM which was to be modified. As well, this DBNS library contains several already programmed numerical fluxes and gradient limiters, such that the focus could remain on developing the well-balanced reconstruction without having to code all of the supporting pieces from scratch.
+The foam-extend fork was chosen over the standard OpenFOAM distribution as it includes an additional density-based Navier Stokes (DBNS) solver which implements very closely the basic FVM which was to be modified. As well, this DBNS library contains several already programmed numerical fluxes and gradient limiters, such that the focus could remain on developing the well-balanced reconstruction without having to code all of the supporting pieces from scratch.
 
 For all of the simulations, the Rusanov flux~\cite{Rusanov1961} was chosen for the numeric flux function (i.e.\ the approximate Riemann Solver) and the Venkatakrishnan limiter~\cite{Venkatakrishnan1993,Venkatakrishnan1995} was used for the gradient limiting in the second order schemes. Both of these were used as already implemented in the DBNS library, with modifications only being made in the higher-level classes which called these modules, such that other limiter and flux function implementations could easily be swapped in if desired, using the runtime selectability provided by OpenFOAM.
 
@@ -35,7 +35,14 @@ For the initial conditions in the rest of the domain, the value of the density $
 \begin{equation}
 \Delta \rho(x)=\frac{A}{2\sigma \sqrt{2 \pi}}\ \textrm{exp}\left[-\frac{1}{2}\left(\frac{x}{\sigma}\right)^2\right].
 \end{equation}
-The width of the Gaussian was determined with $\sigma=0.2$ and the amplitude $A$ was varied to control the maximal magnitude of the perturbation over several series of tests. Once the full $\rho(x)$ function was known, it was used to compute the other initial primitve values throughout the domain.
+The width of the Gaussian was determined with $\sigma=0.2$ and the amplitude $A$ was varied to control the maximal magnitude of the perturbation over several series of tests. Once the full $\rho(x)$ function was known, it was used to compute the other initial primitve values throughout the domain. In Fig.~\ref{fig:OVS_initial_profile} can be seen an example of these initial conditions as computed for the unperturbed equilibrium flow test.
+
+\begin {figure}
+\centering
+\includegraphics[width=13cm]{figures/OVS_initial_profile}
+\caption {Magnitude profiles of the primitive values, density, and potential field at the initial time for the unperturbed equilibrium convergence test.}
+\label{fig:OVS_initial_profile}
+\end{figure}
 
 Results of the simulations were characterized using the average absolute error magnitude, which is calculated as the normalized L1 norm of the error
 \begin{equation}
@@ -49,7 +56,7 @@ All convergence simulations were run to a final time of $t=1$, which was suffici
 
 \subsection{Equilibrium Flow}
 
-The results of the first series of simulations at equilibrium, i.e.\ with $A=0$, are tabulated in Table~\ref{table:OVS_A0} and demonstrate very close agreement to the expected first- and second-order accuracy for the unbalanced schemes. For the well-balanced schemes, the average error is at the level of the machine precision for all grid resolutions, demonstrating the precise maintenence of the equilibrium flow irrespective of the number and size of the grid cells. This serves as a strong empirical verification of the precise matching between the source and flux term discretizations in the~\eqref{eq:balance} balance law for steady states.
+The results of the first series of simulations at equilibrium, i.e.\ with $A=0$, are tabulated in Table~\ref{table:OVS_A0} and demonstrate very close agreement to the expected first- and second-order accuracy for the unbalanced schemes. For the well-balanced schemes, the average error is at the level of the machine precision for all grid resolutions, demonstrating the precise maintenence of the equilibrium flow irrespective of the number and size of the grid cells. This serves as a strong empirical verification of the precise matching between the source and flux term discretizations in the~\eqref{eq:balance} balance law for steady states, i.e.\ it truly is ``well-balanced''.
 
 \begin{table*}\centering
 \caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with no perturbation, i.e.\ $A=0$.}
@@ -81,7 +88,14 @@ In Fig.~\ref{fig:OVS_A0} can be seen a visual representation of the same data fr
 
 \subsection{Gaussian Perturbation}
 
-Next is a series of tests using a `medium' amplitude Gaussian perturbation with $A=0.1$, for which the data are presented in Table~\ref{table:OVS_Amedium} and visualized in Fig.~\ref{fig:OVS_Amedium}. This amplitude was chosen as it is large enough to be clearly resolved by all four combinations of first/second-order and un/well-balanced schemes, as seen in the table where all average errors are smaller than $A$. However, the amplitude was still small enough to ensure that the final solution remained smooth and does not yet present any steepening of flow features into discontinuities.
+Next is a series of tests using a `medium' amplitude Gaussian perturbation with $A=0.1$, with the initial and final density profiles of the reference solution shown in Fig.~\ref{fig:OVS_Amedium_profile}. This amplitude was chosen as it is large enough to be clearly resolved by all four combinations of first/second-order and un/well-balanced schemes, as seen in the table where all average errors are smaller than $A$. However, the amplitude was still small enough to ensure that the final solution remained smooth and does not yet present any steepening of flow features into discontinuities. Data from the convergence tests are presented in Table~\ref{table:OVS_Amedium} and visualized in Fig.~\ref{fig:OVS_Amedium}.
+
+\begin {figure}
+\centering
+\includegraphics[width=13cm]{figures/OVSeps0_1profile}
+\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the medium amplitiude $(A=0.1)$ convergence test, showing no discontinuities.}
+\label{fig:OVS_Amedium_profile}
+\end{figure}
 
 It can be seen that the expected orders of accuracy are observed for the respective first- and second-order schemes where the graphs are in the asymptotic regime. In the second-order case it is noted that the results become abruptly non-linear for the smallest 1-2 grid spacings, due to the use of a reference solution which is itself only computed with the second-order well-balanced scheme using thrice as many cells as the final resolution presented on the plots. Thus the magnitude of errors still present in this reference becomes comparable to the errors in the final steps of the grid refinement, and so the linear convergence breaks down.
 
@@ -152,7 +166,7 @@ Lastly, a large $A=2$ amplitude perturbation was used to investigate the perform
 \begin {figure}
 \centering
 \includegraphics[width=13cm]{figures/OVSeps2profile}
-\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the large amplitiude $(A=2)$ convergence tests, showing clear discontinuities.}
+\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the large amplitiude $(A=2)$ convergence test, showing clear discontinuities.}
 \label{fig:OVS_Alarge_profile}
 \end{figure}
 

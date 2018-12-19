@@ -59,7 +59,7 @@ For both sub-problems a $4\times4$ square domain is used, divided into a uniform
 \subsection{Sub-Problem 1: Potential Step}
 \label{subsec:sub_problem_1}
 
-For the first sub-problem, the potential step positioned at $y_\nabla=0$ is the only flow feature simulated on a square domain defined on $y\in[-1,3]$, $x\in[0,4]$. Inflow occurs at the upper $y=3$ boundary, defined using Dirichlet conditions, and zero-gradient conditions are imposed at the $y=-1$ outflow boundary. Initial conditions are determined by computing the equilibrium flow for the given inlet primitive values over the potential field. By defining also a veritcal wavenumber $k_y=\omega_0/v_\textrm{in}$ the perturbations injected at the inlet are given by the equations
+For the first sub-problem, the potential step positioned at $y_\nabla=0$ is the only flow feature simulated on a square domain defined on $y\in[-1,3]$, $x\in[0,4]$. Inflow occurs at the upper $y=3$ boundary, defined using Dirichlet conditions, and zero-gradient conditions are imposed at the $y=-1$ outflow boundary. Initial conditions are determined by computing the equilibrium flow for the given inlet primitive values over the potential field. By defining also a vertical wavenumber $k_y=\omega_0/v_\textrm{in}$ the perturbations injected at the inlet are given by the equations
 \begin{equation}
 \delta S\equiv\epsilon_S\cos\left(-\omega_0t+k_xx+k_yy\right),
 \end{equation}
@@ -74,7 +74,7 @@ These incoming waves are desired to be at pressure equilibrium ($\delta p=0$), a
 \end{equation}
 Deviations to the 2D velocity components are given as
 \begin{equation}
-\delta v_x\equiv\frac{k_x\omega_0c_\textrm{in}^2}{\omega_0^2+k_x^2v_\textrm{in}^2}\frac{\delta S}{\gamma} \quad \textrm{and} \quad \delta v_y\equiv\frac{k_x^2v_\textrm{in}c_\textrm{in}^2}{\omega_0^2+k_x^2v_\textrm{in}^2}\frac{\delta S}{\gamma},
+\delta v_x\equiv\frac{k_x\omega_0c_\textrm{in}^2}{\omega_0^2+k_x^2v_\textrm{in}^2}\frac{\delta S}{\gamma} \quad \textrm{and} \quad \delta v_y\equiv-\frac{k_x^2v_\textrm{in}c_\textrm{in}^2}{\omega_0^2+k_x^2v_\textrm{in}^2}\frac{\delta S}{\gamma},
 \end{equation}
 which result in the generation of the following vorticity waves 
 \begin{equation}
@@ -89,7 +89,7 @@ For the second sub-problem, only the shock front positioned at $y_\textrm{sh}=1$
 
 Voriticity free pressure perturbations are generated for this sub-problem, and by defining a new vertical wavenumber
 \begin{equation}
-k_y^\pm=\frac{\omega}{c_\textrm{in}}\frac{\mathcal{M}_\textrm{in}\mp\mu}{1-\mathcal{M}_\textrm{in}^2},
+k_y^\pm=\frac{\omega_0}{c_\textrm{in}}\frac{\mathcal{M}_\textrm{in}\mp\mu}{1-\mathcal{M}_\textrm{in}^2},
 \end{equation}
 and density perturbation amplitude $\epsilon_\rho=10^{-3}$, one has the equations for the outlet perturbations as
 \begin{align}
@@ -103,10 +103,24 @@ where one can again use the equation of state to determine the consistent temper
 Velocity perturbations for these purely acoustic pressure waves are given by
 \begin{align}
 \delta v_x&\equiv\left(\frac{k_xc_\textrm{in}^2}{\omega_0}\right)\epsilon_\rho\cos\left(-\omega_0t+k_xx+k_y^-y\right), \\
-\delta v_y&\equiv\left(\frac{\mu+\mathcal{M}_\textrm{in}}{1-\mathcal{M}_\textrm{in}^2}c_\textrm{in}\right)\epsilon_\rho\cos\left(-\omega_0t+k_xx+k_y^-y\right),
+\delta v_y&\equiv\left(\frac{\mu+\mathcal{M}_\textrm{in}}{1-\mathcal{M}_\textrm{in}^2}\right)c_\textrm{in}\epsilon_\rho\cos\left(-\omega_0t+k_xx+k_y^-y\right),
 \end{align}
 where the parameter $\mu$ is simply used for convenience and expands as
 \begin{equation}
 \mu\equiv\sqrt{1-\frac{k_x^2c_\textrm{in}^2}{\omega_0^2}\left(1-\mathcal{M}_\textrm{in}^2\right)}.
 \end{equation}
 These waves then propagate towards the shock front, and any resultant generation of reflected vorticity waves is measured.
+
+\begin {figure}
+\centering
+\includegraphics[width=12cm]{figures/TP1}
+\caption {Results of sub-problem 1 which can be compared to Fig.~2 in FS~\cite{Sato2009}.}
+\label{fig:TP1}
+\end{figure}
+
+\begin {figure}
+\centering
+\includegraphics[width=12cm]{figures/TP2}
+\caption {Results of sub-problem 2 which can be compared to Fig.~4 in FS~\cite{Sato2009}.}
+\label{fig:TP2}
+\end{figure}

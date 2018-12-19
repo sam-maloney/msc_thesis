@@ -42,8 +42,8 @@ For a steady state solution the time derivative term is exactly zero and it can 
 \begin{equation} \label{eq:balance}
 \nabla\cdot(\mathbf{F}(\mathbf{U}))=\mathbf{S}(\mathbf{U}).
 \end{equation}
-In order to find a unique numerical solution to this balance, some constraint on the thermodynamics of the system must be specified. Several options are possible depending on the flow scenario to be modelled, with two important classes comprising constant entropy and constant temeprature flows, i.e.~isentropic and isothermal flows, respectively. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
-\begin{equation}
+In order to find a unique numerical solution to this balance, some constraint on the thermodynamics of the system must be specified. Several options are possible depending on the flow scenario to be modelled, with two important classes comprising constant entropy and constant temperature flows, i.e.~isentropic and isothermal flows, respectively. For example, Bernoulli's principle gives us that the following quantiity should remain constant along streamlines of an isentropic steady flow
+\begin{equation} \label{eq:bernoulli_constant}
 \frac{v^2}{2}+\phi+h=\textrm{constant}\equiv b
 \end{equation}
 where $b$ is referred to as the Bernoulli constant and $h$ is the specific enthalpy
@@ -86,7 +86,7 @@ p=\rho e(\gamma-1),
 \end{equation}
 where the adiabatic index $\gamma=C_p/C_v$ is the ratio of specific heats at constant pressure and volume, respectively.
 
-A typical FVM discretizes the domain into small cells (i.e. volumes) which in 1D can be denoted $I_i=[x_{i-1/2},x_{i+1/2}]$ and for simplicity will be assumed to be of unform size $\Delta x=x_{i+1/2}-x_{i-1/2}$. One then integrates over a given cell $I_i$ and timestep $\Delta t^n=t^{n+1}-t^n$ (also assumed constant) to obtain
+A typical FVM discretizes the domain into small cells (i.e. volumes) which in 1D can be denoted $I_i=[x_{i-1/2},x_{i+1/2}]$ and for simplicity will be assumed to be of uniform size $\Delta x=x_{i+1/2}-x_{i-1/2}$. One then integrates over a given cell $I_i$ and timestep $\Delta t^n=t^{n+1}-t^n$ (also assumed constant) to obtain
 \begin{equation}
 \mathbf{U}_i^{n+1}=\mathbf{U}_i^n-\frac{\Delta t}{\Delta x}\left(\mathbf{F}_{i+1/2}^n-\mathbf{F}_{i-1/2}^n\right)+\Delta t\mathbf{S}_i^n.
 \end{equation}
@@ -96,7 +96,7 @@ As the values in these adjacent cells differ in general, a Riemann problem arise
 \begin{equation} \label{eq:fluxFunction}
 \mathbf{F}_{i+1/2}^n=\bm{\mathcal{F}}\left(\mathbf{w}_{i+1/2-}^n,\mathbf{w}_{i+1/2+}^n\right),
 \end{equation}
-where $\mathbf{w}_{i+1/2-}^n$ and $\mathbf{w}_{i+1/2+}^n$ are the vectors of primitive variables that have been extrapolated from the cell centres at $x_i$ and $x_{i+1}$, denoted with a trailing `$-$' and `$+$' respectively, to the interface at $x_{i+1/2}$. This means that an FVM requires one to specifiy this reconstruction scheme to extend the solution values stored at the cell centres to the cell faces to obtain the Riemann problem at that interface. A piecewise constant reconstruction
+where $\mathbf{w}_{i+1/2-}^n$ and $\mathbf{w}_{i+1/2+}^n$ are the vectors of primitive variables that have been extrapolated from the cell centres at $x_i$ and $x_{i+1}$, denoted with a trailing `$-$' and `$+$' respectively, to the interface at $x_{i+1/2}$. This means that an FVM requires one to specifiy this reconstruction scheme to extend the solution values stored as cell average values in order to estimate the values at the cell faces to obtain the Riemann problem at that interface. A piecewise constant reconstruction
 \begin{equation}
 \mathbf{w}_i^n(x)=\mathbf{w}_i^n,\quad x\in I_i,
 \end{equation}
@@ -121,9 +121,9 @@ along with the polytropic form of the equation of state
 \begin{equation}
 p=p(K,\rho)=K\rho^{\gamma},
 \end{equation}
-where $K=K(s)$ is only a function of the entropy $s$, and so is constant for isentropic flows. From this, the Bernoulli constant can be recast in terms of a single unknown variable, in this case the mass density $\rho(x)$, as
-\begin{equation}
-\frac{1}{2}\frac{m^2}{\rho^2}+\frac{\gamma}{\gamma-1}K\rho^{\gamma-1}+\phi=b, \label{eq:bernoulli}
+where $K=K(s)$ is only a function of the entropy $s$, and so is constant for isentropic flows. From this, the Bernoulli constant~\eqref{eq:bernoulli_constant} can be recast in terms of a single unknown variable, in this case the mass density $\rho(x)$, as
+\begin{equation} \label{eq:bernoulli}
+\frac{1}{2}\frac{m^2}{\rho^2}+\frac{\gamma}{\gamma-1}K\rho^{\gamma-1}+\phi=b,
 \end{equation}
 where the continuity equation~\eqref{eq:eulerContinuity} for a steady state shows that the mass flux $m=\rho v_x$ is also constant.
 

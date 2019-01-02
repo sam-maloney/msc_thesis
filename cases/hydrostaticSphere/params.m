@@ -1,0 +1,16 @@
+gamma = 2; % R/Cv + 1
+R = 5/7; % specific gas constant. depends on molWeight
+Runiversal_foam = 8.31451e3;
+Cv = R/(gamma-1); % 5/7
+Cp = R + Cv; % 10/7
+p_c = 1;
+rho_c = 1;
+K = p_c/rho_c^gamma; % equation of state coefficient
+v = 0;
+Ber = 0.5*v^2 + gamma/(gamma-1)*p_c/rho_c + 0.935973200965766;
+alpha = sqrt(2*pi);
+ar = alpha*0.5;
+p_bc = (sin(ar)/ar)^2;
+T_bc = 7/5*sin(ar)/ar;
+phi_bc = -2*sin(ar)/ar;
+rho_bc = sin(ar)/ar;

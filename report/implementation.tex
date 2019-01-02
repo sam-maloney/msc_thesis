@@ -14,6 +14,28 @@ The Rusanov flux was chosen as it inherently provided sufficient numerical dissi
 
 The Venkatakrishnan limiter was chosen for its applicability to steady state flows, where the differentiability of its limiter function has been shown to speed convergence to stationary flow solutions. It is noted that some testing with the Barth-Jespersen limiter also produced satisfactory results for the convergence studies, and in general the choice of gradient limiter should not impact on the well-balanced nature of the scheme.
 
+\subsection{Computational Time}
+\label{subsec:timing}
+
+As iterative Newton-Raphson solutions are required by the balanced scheme, this is expected to make it more computationally expensive than the standard methods for a given grid resolution. While the exact difference in compuational cost will depend on the memory requirements and set-up of the problem being simulated, a couple of CPU times are presented in Table~\ref{table:timing} for representative simulations in 1D, 2D, and 3D, to give an idea of the observed computational cost. These timings include initialization time and writing of final result files so they are only intended as a rough initial comparison between the unbalanced and well-balanced schemes.
+
+\begin{table*}\centering
+\caption{Computational times for sample problems in various dimensions comparing the second-order unbalanced and well-balanced schemes.}
+\ra{1.3}
+\label{table:timing}
+\begin{tabular}{@{}crrrrrr@{}}\toprule
+& \phantom{a} & \multicolumn{3}{c}{CPU time [$s$]} & \phantom{a} &\\
+\cmidrule{3-5}
+Dimension && unbalanced && well-balanced && Ratio\\ \midrule
+1D && 313 && 1715 && 5.48\\
+2D && 466 && 1999 && 4.29\\
+3D && 17268 && 40386 && 2.34\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+It is noted that this work was primarily focused on the development, implementation, and testing of the new well-balanced method, not optimization thereof, so some level of improvement could almost certainly still be achieved over these results.
+
 
 \section{Order Verification Study}
 \label{sec:OVS}
@@ -45,7 +67,7 @@ The width of the Gaussian was determined with $\sigma=0.2$ and the amplitude $A$
 \end{figure}
 
 Results of the simulations were characterized using the average absolute error magnitude, which is calculated as the normalized L1 norm of the error
-\begin{equation}
+\begin{equation} \label{eq:L1error}
 Err_1=\frac{1}{N}\sum\limits_{i=1}^N \left|\rho_i-\rho_{i,\textrm{ref}}\right|,
 \end{equation}
 where $\rho_{\textrm{ref}}$ is a reference solution that is obtained either from exact calculation of the unperturbed equilibrium flow values, or from an overkill high-resolution simulation computed using $N=21870$ cells and the second-order well-balanced scheme for the test cases with the Gaussian perturbation. For the OVS, the number of cells is progressively tripled from $N=10$ to $N=7290$ and the intra-step order of accuracy is computed by determining the slope of the line connecting the error values of each adjacent pair of simulations using successively refined grids on a log-log plot of $Err_1$ vs.\ $\Delta x$.
@@ -170,7 +192,7 @@ Lastly, a large $A=2$ amplitude perturbation was used to investigate the perform
 \label{fig:OVS_Alarge_profile}
 \end{figure}
 
-Fig.~\ref{fig:OVS_Alarge} shows almost perfect overlap of the errors of the un/well-balanced schemes. Since the iterative Newton-Raphson solutions that are required by the balanced scheme will make it more computationally expensive than the standard method for a given grid resolution, and combined with the earlier medium and small amplitude results, this implies that the use of the well-balanced scheme is only justified for simulations involving deviations from the equilibrium flow that are smaller than or comparable to the error in the equilibrium state for the standard scheme. For such cases, the machine precision accuracy of the equilibrium for the balanced scheme means the perturbation can be simulated with a (potentially much) coarser grid, thus countering the higher computational cost per cell to result in overall savings of required effort for a given level of accuracy.
+Fig.~\ref{fig:OVS_Alarge} shows almost perfect overlap of the errors of the un/well-balanced schemes. As mentioned in Section~\ref{subsec:timing} the well-balanced scheme is more computationally expensive than the standard method for a given grid resolution, and combined with the earlier medium and small amplitude results, this implies that the use of the well-balanced scheme is only justified for simulations involving deviations from the equilibrium flow that are smaller than or comparable to the error in the equilibrium state for the standard scheme. For such cases, the machine precision accuracy of the equilibrium for the balanced scheme means the perturbation can be simulated with a (potentially much) coarser grid, thus countering the higher computational cost per cell to result in overall savings of required effort for a given level of accuracy.
 
 \begin{table*}\centering
 \caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with very large perturbation amplitude $A=2$.}
@@ -199,3 +221,63 @@ $7290$ && 2.18e-03/2.15e-03 & 0.90/0.90 && 2.00e-04/1.83e-04 & 0.98/1.05\\
 \end{figure}
 
 For all amplitiudes, a good agreement is seen between the experimental results and the theoretically expected orders of accuracy, providing a solid verification of the correct implementation of the new well-balanced scheme.
+
+
+\section{3D Polytrope}
+\label{sec:polytrope}
+
+With the formal accuracy now demonstrated for regular 1D gemoetries, a higher dimensional test is carried out using a simple astrophsyical problem. The 3D polytrope example from KM is chosen, to also illustrate the recovery of the hydrostatic case by the newly extended scheme. This problem simulates a hydrostatic configuration of adiabatic gases held together in a sphere by self-gravitation, according to the spherical equilibrium
+\begin{equation} \label{eq:polyEquilibrium}
+\frac{\textrm{d}p}{\textrm{d}r}=-\rho\frac{\textrm{d}\phi}{\textrm{d}r},
+\end{equation}
+and Poisson's equation in spherical symmetry
+\begin{equation} \label{eq:spherePoisson}
+\frac{1}{r^2}\frac{\textrm{d}}{\textrm{d}r}\left(r^2\frac{\textrm{d}\phi}{\textrm{d}r}\right)=4\pi G\rho,
+\end{equation}
+with the radial variable and gravitaitonal constant as $r$ and $G$, respectively.
+
+Using the polytropic equation of state~\eqref{eq:polyEOS}, one can combine Eqs.~\eqref{eq:polyEquilibrium} and \eqref{eq:spherePoisson} into the single Lane-Emden equation
+\begin{equation}
+\frac{1}{r^2}\frac{\textrm{d}}{\textrm{d}r}\left(r^2\gamma K\frac{\textrm{d}\phi}{\textrm{d}r}\right)=-4\pi G\rho,
+\end{equation}
+which has analytic solutions for three adiabatic constants $(\gamma=6/5,2,\inf)$. $\gamma=2$ will therefore be used for the following tests, as neutron stars can be modeled by $\gamma\in[2,3]$ and an analytical solution exists.
+
+This then gives the following analytic gravitational potential and primitive variable profiles
+\begin{align}
+\phi(r)&=-2K\rho_c\frac{\sin(\alpha r)}{\alpha r}, \\
+\rho(r)&=\rho_c\frac{\sin(\alpha r)}{\alpha r}, \\
+p(r)&=K\left(\rho_c\frac{\sin(\alpha r)}{\alpha r}\right)^2, \\
+T(r)&=\frac{K\rho_c}{R}\frac{\sin(\alpha r)}{\alpha r},
+\end{align}
+where $\rho_c$ is the density at the centre of the polytrope, $R$ is the specific gas constant, and
+\begin{equation}
+\alpha=\sqrt{\frac{4\pi G}{2K}}.
+\end{equation}
+
+Note that the configuration is hydrostatic so the velocity profile is simply $v(r)=0$ everywhere. The model constants are set as $K=G=\rho_c=1$ and $R=5/7$.
+
+The polytrope was simulated over a spherical domain of radius $0.5$ centred at the origin. Unstructured tetrahedral meshes with varying numbers of cells $N$ were generated using the Delauney algorithm of Gmsh, followed by mesh optimization with both the standard Gmsh and Netgen optpimizers in the Gmsh package.  Initial field profiles were simply set using the analytic solutions. Dirichlet boundary conditions were used for all fields exept the velocity, and were fixed to the analytic values, with the velocity then given a homogenous Neumann boundary condition.
+
+Results of the simulations are given in Table~\ref{table:polytrope}, again using the L1 error norm~\eqref{eq:L1error} of the density to characterize the deviation from the analytic equilibrium. All simulations were run to a final time $t=1$ with a timestep $\Delta t=0.001$ for a total of $1000$ timesteps. Measuring the spatial order of accuracy for an unstructured mesh is a much complicated problem than for a regular cartesian grid, as each cell can have it's own size and shape. Therefore a characteristic length scale must be specified for each tested mesh, in order to approximate the order of accuracy for the convergence of the solutions.
+
+\begin{table*}\centering
+\caption{L1 error of the density and approximate intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes for 3D polytrope on $N$ cell tetrahedral mesh.}
+\ra{1.3}
+\label{table:polytrope}
+\begin{tabular}{@{}rlccccc@{}}\toprule
+&& \multicolumn{2}{c}{First} &  & \multicolumn{2}{c}{Second}\\
+\cmidrule{3-4} \cmidrule{6-7}
+$N$ & \phantom{al}$h$ & $Err_1$ & Order && $Err_1$ & Order\\ \midrule
+$4144$ & 0.585\phantom{a} & 8.17e-03/1.23e-15 &&& 4.22e-04/1.31e-15 &\\
+$28036$ & 0.327 & 6.02e-03/1.22e-15 & 0.54/- && 2.06e-04/1.29e-15 & 1.24/-\\
+$233064$ & 0.177 & 3.54e-03/1.23e-15 & 0.87/- && 1.07e-04/1.37e-15 & 1.07/-\\
+$1857454$ & 0.097 & 1.94e-03/1.24e-15 & 1.01/- && 6.04e-05/1.99e-15 & 0.96/-\\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+In this study, such a characteristic length, denoted $h$, was computed by using the volume of the largest mesh cell to determine the side length of a regular tetrahedron of that volume, with that side length then multiplied by the largest aspect ratio of the cells in the mesh. It is noted that this $h$ is not intended to represent an actual physical length in the mesh, but to provide a single metric which takes into account both the size and quality of the cells present in the mesh, and which should scale comparably between meshes generated using the same algorithm.
+
+Analyzing the results revealed only machine precision deviation from the analytic equilibrium for the first- and second-order new schemes on all mesh sizes, confirming the well-balanced properties even on an unstructured tetrahedral mesh. The standard scheme, by contrast, produces spurious perturbations, which do converge to the analytic solution with increasing mesh resolution. For the first-order scheme, the approximate order of accuracy approaches the expected value of $1$ as the mesh is refined, while for the second-order scheme the order actually decreases towards $1$ as well for higher $N$, although the magnitude of the error is lower than for the first order scheme.
+
+Some of this deviation may be due to the approximate nature of the characteristic length used for the analysis, but it has also been shown by Roe~\cite{Roe1987} that local truncation error for some FVMs is only first-order accurate for very irregular triangular meshes. Therefore this first-order accuracy on tetrahedral meshes meshes may not be entirely surprising, although Lindquist and Giles~\cite{Lindquist1989} and Giles~\cite{Giles1989} have shown that for some triangular meshes global second-order accuracy is possible, so perhaps for a higher-quality and more precise characteristic length a better convergence order could be demonstrated. However, as the well-balanced schemes, not the standard schemes, are the focus of this thesis, such further studies are not undertaken here.

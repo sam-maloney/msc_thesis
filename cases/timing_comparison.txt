@@ -1,0 +1,4 @@
+balanced: 1715 1999 40386 s
+standard: 313  466  17268 s
+ratio   : 5.48 4.29 2.34
+# dims  : 1    2    3

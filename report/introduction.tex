@@ -23,7 +23,7 @@ The time evolution of the dynamics of fluids can be described by systems of bala
 \end{align}
 \end{subequations}
 where $\rho$ is the mass density, and $\mathbf{v}$ is the local velocity vector. $E$ is the total energy sum of the internal and kinetic energies given as
-\begin{equation}
+\begin{equation} \label{eq:totalEnergy}
 E=\rho e + \frac{\rho v^2}{2}.
 \end{equation}
 An equation of state $p=p(\rho,e)$ must be selected for a given problem to complete the relations between these primitive quanitites. The quantitiy $\phi$ on the right-hand side of the latter two equations represents a potential field, such as gravity, which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given function, through pre-computation, or by solving for it independently of the other fluid quantities at each time step.
@@ -118,7 +118,7 @@ We will use the thermodynamic definitions of the specific enthalpy~\eqref{eq:ent
 e=\frac{p}{(\gamma-1)\rho},
 \end{equation}
 along with the polytropic form of the equation of state
-\begin{equation}
+\begin{equation} \label{eq:polyEOS}
 p=p(K,\rho)=K\rho^{\gamma},
 \end{equation}
 where $K=K(s)$ is only a function of the entropy $s$, and so is constant for isentropic flows. From this, the Bernoulli constant~\eqref{eq:bernoulli_constant} can be recast in terms of a single unknown variable, in this case the mass density $\rho(x)$, as
@@ -128,7 +128,7 @@ where $K=K(s)$ is only a function of the entropy $s$, and so is constant for ise
 where the continuity equation~\eqref{eq:eulerContinuity} for a steady state shows that the mass flux $m=\rho v_x$ is also constant.
 
 All of the constant values in~\eqref{eq:bernoulli} can be computed for a given cell $i$ and timestep $n$ using the stored cell-centred values, and then the the value of $\rho(x)$ throughout the cell can be directly tied to the known variation in $\phi(x)$ as
-\begin{equation}
+\begin{equation} \label{eq:equilibRecon}
 \frac{1}{2}\left(\frac{m_i^n}{\rho_{0,i}^n(x)}\right)^2+\frac{\gamma}{\gamma-1}K_i^n\rho_{0,i}^n(x)^{\gamma-1}+\phi(x)=b_i^n.
 \end{equation}
 This relationship is strongly dependent on the form of the equation of state but is in general non-linear; however, one can compute the value of $\rho_{0,i}^n(x)$ at a specific location by using the iterative Newton-Raphson root-finding algorithm
@@ -165,19 +165,62 @@ as inputs to the chosen Riemann solver at the cell interfaces.
 
 To achieve exact balancing of the source and flux terms, we require that the diexcretizations are not only consistent, but also that the constants and higher order terms of the Taylor expansions precisely match. Following KM, the definitions used for the source terms are
 \begin{align}
-S_{\rho v,i}^n&=\frac{\left[\rho_{0,i}^n(v_{x,0,i}^n)^2+p_{0,i}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:momentumSource} \\
-S_{E,i}^n&=-\rho v_{x,i}^n\frac{\phi_{i+1}-\phi_{i-1}}{2\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho v_x \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:energySource}
+S_{\rho v,i}^n&=\frac{\left[\rho_{0,i}^n\left(v_{x,0,i}^n\right)^2+p_{0,i}^n\right]_{x_{i-1/2}}^{x_{i+1/2}}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:momentumSource} \\
+S_{E,i}^n&=-\rho_i^n v_{x,i}^n\frac{\phi_{i+1/2}-\phi_{i-1/2}}{\Delta x}=-\int\limits_{x_{i-1/2}}^{x_{i+1/2}}\rho v_x \frac{\partial \phi}{\partial x}\textrm{d}x+O\left(\Delta x^2\right), \label{eq:energySource}
 \end{align}
 where the notation $\left[f(x)\right]_a^b\equiv f(x=b)-f(x=a)$ is used for the momentum source term.
 
 Both of these are spatially second-order accurate approximations of the source terms in~\eqref{eq:euler1D}, but are specifically chosen such that the higher order error terms will precisely cancel those of the corresponding numerical flux approximations for equilibirum flows. Together these discretizations give the source vector
-\begin{equation}
+\begin{equation} \label{eq:sourceVector}
 \mathbf{S}_i^n=
 \begin{bmatrix}
 0 \\ S_{\rho v,i}^n \\ S_{E,i}^n
 \end{bmatrix}.
 \end{equation}
 Combining the above source vector with the primitives of~\eqref{eq:primitives1D1} gives a well-balanced scheme which will exactly preserve a given equilibrium state to machine precision, provided the potential is either fully known or defined discretely on the given grid. The scheme will, however, only model perturbations of the equilibrium with first-order accuracy in space.
+
+\begin{proof}
+  To prove the well-balancing of the new scheme with these source discretizations, one starts with data that satisfies~\eqref{eq:bernoulli_constant} and then inserts it into~\eqref{eq:equilibRecon} to obtain $\rho_{i+1/2-}^n=\rho_{i+1/2+}^n=\rho_{i+1/2}^n$. From this it can easily be seen that the same must be true for the primitive variables, i.e.\ $p_{i+1/2-}^n=p_{i+1/2+}^n=p_{i+1/2}^n$ and $v_{x,i+1/2-}^n=v_{x,i+1/2+}^n=v_{x,i+1/2}^n$ and $T_{i+1/2-}^n=T_{i+1/2+}^n=T_{i+1/2}^n$. Using these as inputs to a consistent numerical flux then gives
+\begin{align*}
+\mathbf{F}_{i+1/2}^n&=\bm{\mathcal{F}}\left([p_{i+1/2}^n,v_{x,i+1/2}^n,T_{i+1/2}^n]^T,[p_{i+1/2}^n,v_{x,i+1/2}^n,T_{i+1/2}^n]^T\right) \\
+&=
+\begin{bmatrix}
+\rho_{i+1/2}^n v_{x,i+1/2}^n \\ \rho_{i+1/2}^n\left(v_{x,i+1/2}^n\right)^2+p_{i+1/2}^n \\ \left(E_{i+1/2}^n+p_{i+1/2}^n\right)v_{x,i+1/2}
+\end{bmatrix}.
+\end{align*}
+As noted previously, for a flow at equilibrium $m=\rho v_x$ is constant everywhere, so the first entry for the mass flux can simply be replaced by $m^n$, which is independent of the position. Using this constant $m$ and the relation~\eqref{eq:totalEnergy} for the total energy, the last entry for the energy flux can be transformed as (dropping the sub- and superscripts briefly for convenience)
+\begin{align*}
+\left(E+p\right)v&=\left(\rho e + \frac{\rho v^2}{2}+p\right)v \\
+&=\left(e + \frac{v^2}{2}+\frac{p}{\rho}\right)\rho v \\
+&=\left(h + \frac{v^2}{2}\right)m,
+\end{align*}
+where the definition~\eqref{eq:enthalpy} for the specific enthalpy was used in the final step. Comparing to~\eqref{eq:bernoulli_constant} for the Bernoulli constant, the final flux can then be written as
+\begin{equation*}
+\begin{bmatrix}
+m^n \\ \rho_{i+1/2}^n\left(v_{x,i+1/2}^n\right)^2+p_{i+1/2}^n \\ \left(b^n-\phi_{i+1/2}^n\right)m^n
+\end{bmatrix}.
+\end{equation*}
+Evaluating the source term~\eqref{eq:sourceVector} with \eqref{eq:momentumSource} and \eqref{eq:energySource} gives
+\begin{equation*}
+\mathbf{S}_i^n=\frac{1}{\Delta x}
+\begin{bmatrix}
+0 \\ \left[\rho_i^n\left(v_{x,i}^n\right)^2+p_i^n\right]_{x_{i-1/2}}^{x_{i+1/2}} \\ -\rho_i^n v_{x,i}^n\left(\phi_{i+1/2}-\phi_{i-1/2}\right)
+\end{bmatrix}.
+\end{equation*}
+The expressions for the numerical fluxes and source terms can then be combined to obtain
+\begin{align*}
+\frac{\mathbf{F}_{i+1/2}^n-\mathbf{F}_{i-1/2}^n}{\Delta x}&=\frac{1}{\Delta x}
+\begin{bmatrix}
+m^n \\ \rho_i^n\left(v_{x,i}^n\right)^2+p_i^n \\ \left(b^n-\phi_i^n\right)m^n
+\end{bmatrix}_{x_{i-1/2}}^{x_{i+1/2}} \\
+&=\frac{1}{\Delta x}
+\begin{bmatrix}
+0 \\ \left[\rho_i^n\left(v_{x,i}^n\right)^2+p_i^n\right]_{x_{i-1/2}}^{x_{i+1/2}} \\ -\rho_i^n v_{x,i}^n\left(\phi_{i+1/2}-\phi_{i-1/2}\right)
+\end{bmatrix} \\
+&=\mathbf{S}_i^n,
+\end{align*}
+which confirms that the flux and source discretizations of the new scheme are well-balanced.
+\end{proof}
 
 \subsection{Extension to Second Order}
 \label{subsec:secondOrder}

@@ -1,0 +1,2 @@
+funkySetFields -time 0 -keepPatches -field p -expression "(0.177142857142857+1e-4*cos(1.570796326794897*pos().x-1.347449634548289*pos().y))*(5.0/7.0)*0.208502188361161" -condition "pos().y>1.1"
+funkySetFields -time 0 -keepPatches -field rho -expression "(0.177142857142857+1e-4*cos(1.570796326794897*pos().x-1.347449634548289*pos().y))" -condition "pos().y>1.1"

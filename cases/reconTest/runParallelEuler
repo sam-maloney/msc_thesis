@@ -1,7 +1,0 @@
-#!/bin/bash
-fe40
-blockMesh
-decomposePar -force
-mpirun dbnsPotentialFoam -parallel
-reconstructPar
-rm -rf processor*

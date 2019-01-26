@@ -4,7 +4,7 @@
 \section{Programming Environment}
 \label{sec:environment}
 
-Implementation of the well-balanced method was carried out using the foam-extend 4.0 fork of the OpenFOAM (Open-Source Field Operation And Manipulation) software project. OpenFOAM was selected as it is a mature and feature rich platform for computational fluid dynamics, and thus already provides many utilities and functionality for tasks such as pre- and post-processing data, runtime selection of simulation parameters, and managing very generic meshes. It is coded entirely in object-oriented C++, making it also very flexible for extension.
+Implementation of the well-balanced method was carried out using the foam-extend 4.0 fork of the OpenFOAM (Open-Source Field Operation And Manipulation) software project. OpenFOAM was selected as it is a mature and feature-rich platform for computational fluid dynamics, and thus already provides many utilities and functionality for tasks such as pre- and post-processing data, runtime selection of simulation parameters, and managing very generic meshes. It is coded entirely in object-oriented C++, making it also very flexible for extension.
 
 The foam-extend fork was chosen over the standard OpenFOAM distribution as it includes an additional density-based Navier Stokes (DBNS) solver which implements very closely the basic FVM which was to be modified. As well, this DBNS library contains several already programmed numerical fluxes and gradient limiters, such that the focus could remain on developing the well-balanced reconstruction without having to code all of the supporting pieces from scratch.
 
@@ -51,13 +51,13 @@ An order verification study (OVS) was carried out to verify that the implementat
 \end{equation}
 The constant regions at the domain edges allowed for simple zero-gradient boundary conditions to be used for all non-fixed primitives, and the quintic coefficients were chosen to match also the first and second derivatives (to zero) at the transition points to the constant regions.
 
-The inlet of the flow was set using dirichlet boundary conditions on $T$ and $v_x$ at $x=2$ with the values set to the same as those used for the inlet of sub-problem 1 described in Section~\ref{sec:TP_set_up} (see there for a more detailed description of how these values are determined). To briefly summarize here, at the inlet one has $p=0.75, T=1.05,$ and $v_x=-\sqrt{31/199}\approx-0.39$, with adiabatic constant $\gamma=4/3$ and units such that $c=\rho=1$. The inlet condition for the pressure is set to zero-gradient at the inlet, as having both it and the velocity fixed caused spurious error in some test cases and was recommended against in the OpenFOAM documenation. At the outlet, all primitives were given homogenous Neumann boundary conditions.
+The inlet of the flow was set using Dirichlet boundary conditions on $T$ and $v_x$ at $x=2$ with the values set to the same as those used for the inlet of sub-problem 1 described in Section~\ref{sec:TP_set_up} (see there for a more detailed description of how these values are determined). To briefly summarize here, at the inlet one has $p=0.75, T=1.05,$ and $v_x=-\sqrt{31/199}\approx-0.39$, with adiabatic constant $\gamma=4/3$ and units such that $c=\rho=1$. The inlet condition for the pressure is set to zero-gradient at the inlet, as having both it and the velocity fixed caused spurious error in some test cases and was recommended against in the OpenFOAM documentation. At the outlet, all primitives were given homogenous Neumann boundary conditions.
 
-For the initial conditions in the rest of the domain, the value of the density $\rho(x)$ for a flow equilibrium flow was calculated, and then superimposed with a Gaussian perturbation centred at $x=0$, given by
+For the initial conditions in the rest of the domain, the value of the density $\rho(x)$ for an  equilibrium flow was calculated, and then superimposed with a Gaussian perturbation centred at $x=0$, given by
 \begin{equation}
 \Delta \rho(x)=\frac{A}{2\sigma \sqrt{2 \pi}}\ \textrm{exp}\left[-\frac{1}{2}\left(\frac{x}{\sigma}\right)^2\right].
 \end{equation}
-The width of the Gaussian was determined with $\sigma=0.2$ and the amplitude $A$ was varied to control the maximal magnitude of the perturbation over several series of tests. Once the full $\rho(x)$ function was known, it was used to compute the other initial primitve values throughout the domain. In Fig.~\ref{fig:OVS_initial_profile} can be seen an example of these initial conditions as computed for the unperturbed equilibrium flow test.
+The width of the Gaussian was determined with $\sigma=0.2$ and the amplitude $A$ was varied to control the maximal magnitude of the perturbation over several series of tests. Once the full $\rho(x)$ function was known, it was used to compute the other initial primitive values throughout the domain. In Fig.~\ref{fig:OVS_initial_profile} can be seen an example of these initial conditions as computed for the unperturbed equilibrium flow test.
 
 \begin {figure}
 \centering
@@ -74,7 +74,7 @@ where $\rho_{\textrm{ref}}$ is a reference solution that is obtained either from
 
 Tripling was used such that when refining the grid, each cell would be perfectly split in three, and thus the position of the cell centre for the newly created middle cell would align exactly with the cell centre for the original coarse cell. Therefore, no interpolation is required to compare the cell centre values with the solutions obtained at any of the finer resolutions, and in particular the reference solution contains a value precisely at the location of each cell centre of every other grid resolution tested.
 
-All convergence simulations were run to a final time of $t=1$, which was sufficient for the perturbations to have travelled significantly through the domain but still be most entirely contained within it.
+All convergence simulations were run to a final time of $t=1$, which was sufficient for the perturbations to have travelled significantly through the domain but still be mostly entirely contained within it.
 
 \subsection{Equilibrium Flow}
 
@@ -115,7 +115,7 @@ Next is a series of tests using a `medium' amplitude Gaussian perturbation with 
 \begin {figure}
 \centering
 \includegraphics[width=13cm]{figures/OVSeps0_1profile}
-\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the medium amplitiude $(A=0.1)$ convergence test, showing no discontinuities.}
+\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the medium amplitude $(A=0.1)$ convergence test, showing no discontinuities.}
 \label{fig:OVS_Amedium_profile}
 \end{figure}
 
@@ -177,9 +177,9 @@ $7290$ && 1.21e-04/1.25e-07 & 1.00/0.98 && 5.28e-08/5.69e-10 & 1.98/0.35\\
 \label{fig:OVS_Asmall}
 \end{figure}
 
-From the results, it is clear that the average error of the unbalanced scheme is much larger than the perturbation amplitude for all studied grid resolutions in the first-order case, and and even for the second-order scheme requires a fairly significant level of refinement before the error drops low enough for the perturbation to possibly be well resolved. The order of the convergence is of course still correct in both instances, but this is essentially just the same convergence towards the equilibrium as in the $A=0$ case, since the large magnitude of the errors compared to the perturbation amplitude mean that the deviation is not meaningfully percieved or simulated by the scheme over much of the parameter space.
+From the results, it is clear that the average error of the unbalanced scheme is much larger than the perturbation amplitude for all studied grid resolutions in the first-order case, and and even for the second-order scheme requires a fairly significant level of refinement before the error drops low enough for the perturbation to possibly be well resolved. The order of the convergence is of course still correct in both instances, but this is essentially just the same convergence towards the equilibrium as in the $A=0$ case, since the large magnitude of the errors compared to the perturbation amplitude mean that the deviation is not meaningfully perceived or simulated by the scheme over much of the parameter space.
 
-By contrast, the well-balanced scheme exhibits average errors much smaller than the pertuabtion amplitude, with even the least resolved first-order simulation already having almost a full order of magnitude smaller error. Observed orders of convergence are the same as for the unbalanced scheme, but as exemplified visually in Fig.~\ref{fig:OVS_Asmall}, the absolute size of the errors is many orders of magnitude less for the well-balanced scheme. No level of grid refinement studied was able to get the first-order unbalanced scheme to the accuracy of its well-balanced counterpart, and it required approximately $3^3$ times more grid cells in the second-order tests to match the observed accuracy there. This demonstrates the potentially massive savings in computational cost provided by the well-balanced method for simulating small perturbations, especially in 2D or 3D simulations where the benefits would be compounded along each additional dimension.
+By contrast, the well-balanced scheme exhibits average errors much smaller than the perturbation amplitude, with even the least resolved first-order simulation already having almost a full order of magnitude smaller error. Observed orders of convergence are the same as for the unbalanced scheme, but as exemplified visually in Fig.~\ref{fig:OVS_Asmall}, the absolute size of the errors is many orders of magnitude less for the well-balanced scheme. No level of grid refinement studied was able to get the first-order unbalanced scheme to the accuracy of its well-balanced counterpart, and it required approximately $3^3$ times more grid cells in the second-order tests to match the observed accuracy there. This demonstrates the potentially massive savings in computational cost provided by the well-balanced method for simulating small perturbations, especially in 2D or 3D simulations where the benefits would be compounded along each additional dimension.
 
 \subsection{Discontinuous Flow}
 
@@ -188,7 +188,7 @@ Lastly, a large $A=2$ amplitude perturbation was used to investigate the perform
 \begin {figure}
 \centering
 \includegraphics[width=13cm]{figures/OVSeps2profile}
-\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the large amplitiude $(A=2)$ convergence test, showing clear discontinuities.}
+\caption {Density profiles at the initial time (blue line) and final time (red line) of the reference simulation for the large amplitude $(A=2)$ convergence test, showing clear discontinuities.}
 \label{fig:OVS_Alarge_profile}
 \end{figure}
 
@@ -220,13 +220,13 @@ $7290$ && 2.18e-03/2.15e-03 & 0.90/0.90 && 2.00e-04/1.83e-04 & 0.98/1.05\\
 \label{fig:OVS_Alarge}
 \end{figure}
 
-For all amplitiudes, a good agreement is seen between the experimental results and the theoretically expected orders of accuracy, providing a solid verification of the correct implementation of the new well-balanced scheme.
+For all amplitudes, a good agreement is seen between the experimental results and the theoretically expected orders of accuracy, providing a solid verification of the correct implementation of the new well-balanced scheme.
 
 
 \section{3D Polytrope}
 \label{sec:polytrope}
 
-With the formal accuracy now demonstrated for regular 1D gemoetries, a higher dimensional test is carried out using a simple astrophsyical problem. The 3D polytrope example from KM is chosen, to also illustrate the recovery of the hydrostatic case by the newly extended scheme. This problem simulates a hydrostatic configuration of adiabatic gases held together in a sphere by self-gravitation, according to the spherical equilibrium
+With the formal accuracy now demonstrated for regular 1D geometries, a higher dimensional test was carried out using a simple astrophysical problem. The 3D polytrope example from KM14 was chosen, to also illustrate the recovery of the hydrostatic case by the newly extended scheme. This problem simulates a hydrostatic configuration of adiabatic gases held together in a sphere by self-gravitation, according to the spherical equilibrium
 \begin{equation} \label{eq:polyEquilibrium}
 \frac{\textrm{d}p}{\textrm{d}r}=-\rho\frac{\textrm{d}\phi}{\textrm{d}r},
 \end{equation}
@@ -234,13 +234,13 @@ and Poisson's equation in spherical symmetry
 \begin{equation} \label{eq:spherePoisson}
 \frac{1}{r^2}\frac{\textrm{d}}{\textrm{d}r}\left(r^2\frac{\textrm{d}\phi}{\textrm{d}r}\right)=4\pi G\rho,
 \end{equation}
-with the radial variable and gravitaitonal constant as $r$ and $G$, respectively.
+with the radial variable and gravitational constant as $r$ and $G$, respectively.
 
 Using the polytropic equation of state~\eqref{eq:polyEOS}, one can combine Eqs.~\eqref{eq:polyEquilibrium} and \eqref{eq:spherePoisson} into the single Lane-Emden equation
 \begin{equation}
 \frac{1}{r^2}\frac{\textrm{d}}{\textrm{d}r}\left(r^2\gamma K\frac{\textrm{d}\phi}{\textrm{d}r}\right)=-4\pi G\rho,
 \end{equation}
-which has analytic solutions for three adiabatic constants $(\gamma=6/5,2,\inf)$. $\gamma=2$ will therefore be used for the following tests, as neutron stars can be modeled by $\gamma\in[2,3]$ and an analytical solution exists.
+which has analytic solutions for three adiabatic constants $(\gamma=6/5,2,\infty)$. For the following tests $\gamma=2$ will therefore be used, as neutron stars can be modelled by $\gamma\in[2,3]$ and an analytic solution exists.
 
 This then gives the following analytic gravitational potential and primitive variable profiles
 \begin{align}
@@ -253,15 +253,23 @@ where $\rho_c$ is the density at the centre of the polytrope, $R$ is the specifi
 \begin{equation}
 \alpha=\sqrt{\frac{4\pi G}{2K}}.
 \end{equation}
+Note that the configuration is hydrostatic, so the velocity profile is simply $v(r)=0$ everywhere. The model constants are set as $K=G=\rho_c=1$ and $R=5/7$.
 
-Note that the configuration is hydrostatic so the velocity profile is simply $v(r)=0$ everywhere. The model constants are set as $K=G=\rho_c=1$ and $R=5/7$.
+The polytrope was simulated over a spherical domain of radius $r=0.5$ centred at the origin. Unstructured tetrahedral meshes with varying numbers of cells $N$ were generated using the Delauney algorithm of Gmsh, followed by mesh optimization with both the standard Gmsh and Netgen optimizers in the Gmsh package. Illustrations of the two coarsest of these meshes are shown in Fig.~\ref{fig:sphere_meshes}. Initial field profiles were simply set using the analytic solutions. Dirichlet boundary conditions were used for all fields except the velocity, and were fixed to the analytic values, with the velocity then given a homogenous Neumann boundary condition.
 
-The polytrope was simulated over a spherical domain of radius $0.5$ centred at the origin. Unstructured tetrahedral meshes with varying numbers of cells $N$ were generated using the Delauney algorithm of Gmsh, followed by mesh optimization with both the standard Gmsh and Netgen optpimizers in the Gmsh package.  Initial field profiles were simply set using the analytic solutions. Dirichlet boundary conditions were used for all fields exept the velocity, and were fixed to the analytic values, with the velocity then given a homogenous Neumann boundary condition.
+\begin {figure}
+\centering
+\includegraphics[width=13cm]{figures/sphere_meshes}
+\caption {Illustrations of the two coarsest meshes generated on a 3D sphere of radius $r=0.5$ centred at the origin, showing the unstructured tetrahedal mesh and its refinement.}
+\label{fig:sphere_meshes}
+\end{figure}
 
-Results of the simulations are given in Table~\ref{table:polytrope}, again using the L1 error norm~\eqref{eq:L1error} of the density to characterize the deviation from the analytic equilibrium. All simulations were run to a final time $t=1$ with a timestep $\Delta t=0.001$ for a total of $1000$ timesteps. Measuring the spatial order of accuracy for an unstructured mesh is a much complicated problem than for a regular cartesian grid, as each cell can have it's own size and shape. Therefore a characteristic length scale must be specified for each tested mesh, in order to approximate the order of accuracy for the convergence of the solutions.
+Results of the simulations are given in Table~\ref{table:polytrope}, again using the L1 error norm~\eqref{eq:L1error} of the density to characterize the deviation from the analytic equilibrium. All simulations were run to a final time $t=1$ with a timestep $\Delta t=0.001$ for a total of $1000$ timesteps.
+
+Measuring the spatial order of accuracy for an unstructured mesh is a much more complicated problem than for a regular cartesian grid, as each cell can have its own size and shape. Therefore a characteristic length scale must be specified for each tested mesh, in order to approximate the order of accuracy for the convergence of the solutions.
 
 \begin{table*}\centering
-\caption{L1 error of the density and approximate intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes for 3D polytrope on $N$ cell tetrahedral mesh.}
+\caption{L1 error of the density and approximate intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes for the 3D polytrope on tetrahedral meshes with $N$ cells and characteristic length $h$.}
 \ra{1.3}
 \label{table:polytrope}
 \begin{tabular}{@{}rlccccc@{}}\toprule
@@ -278,6 +286,6 @@ $1857454$ & 0.097 & 1.94e-03/1.24e-15 & 1.01/- && 6.04e-05/1.99e-15 & 0.96/-\\
 
 In this study, such a characteristic length, denoted $h$, was computed by using the volume of the largest mesh cell to determine the side length of a regular tetrahedron of that volume, with that side length then multiplied by the largest aspect ratio of the cells in the mesh. It is noted that this $h$ is not intended to represent an actual physical length in the mesh, but to provide a single metric which takes into account both the size and quality of the cells present in the mesh, and which should scale comparably between meshes generated using the same algorithm.
 
-Analyzing the results revealed only machine precision deviation from the analytic equilibrium for the first- and second-order new schemes on all mesh sizes, confirming the well-balanced properties even on an unstructured tetrahedral mesh. The standard scheme, by contrast, produces spurious perturbations, which do converge to the analytic solution with increasing mesh resolution. For the first-order scheme, the approximate order of accuracy approaches the expected value of $1$ as the mesh is refined, while for the second-order scheme the order actually decreases towards $1$ as well for higher $N$, although the magnitude of the error is lower than for the first order scheme.
+Analyzing the results revealed machine precision deviation from the analytic equilibrium for the new first- and second-order well-balanced schemes on all mesh sizes, confirming the well-balanced properties even on an unstructured tetrahedral mesh. The standard scheme, by contrast, produces spurious perturbations, which do converge to the analytic solution with increasing mesh resolution. For the first-order scheme, the approximate order of accuracy approaches the expected value of unity as the mesh is refined, while for the second-order scheme the order actually decreases towards unity as well for higher $N$, although the magnitude of the error is lower than for the first-order scheme.
 
-Some of this deviation may be due to the approximate nature of the characteristic length used for the analysis, but it has also been shown by Roe~\cite{Roe1987} that local truncation error for some FVMs is only first-order accurate for very irregular triangular meshes. Therefore this first-order accuracy on tetrahedral meshes meshes may not be entirely surprising, although Lindquist and Giles~\cite{Lindquist1989} and Giles~\cite{Giles1989} have shown that for some triangular meshes global second-order accuracy is possible, so perhaps for a higher-quality and more precise characteristic length a better convergence order could be demonstrated. However, as the well-balanced schemes, not the standard schemes, are the focus of this thesis, such further studies are not undertaken here.
+Some of this deviation from the expected order may be due to the approximate nature of the characteristic length used for the analysis, but it has also been shown by Roe~\cite{Roe1987} that local truncation error for some FVMs is only first-order accurate for very irregular triangular meshes. Therefore this first-order accuracy on tetrahedral meshes may not be entirely surprising, although Lindquist and Giles~\cite{Lindquist1989} and Giles~\cite{Giles1989} have shown that for some triangular meshes global second-order accuracy is possible, so perhaps for a higher-quality mesh and more precise characteristic length a better convergence order could be demonstrated. However, as the well-balanced schemes, not the standard schemes, are the focus of this thesis, such further studies are not undertaken here.

@@ -26,14 +26,15 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         8.368;
+//endTime         1;
+endTime         12.552;
 
 deltaT          0.001;
 
 writeControl    runTime;
 
-//writeInterval   0.523;
-writeInterval   0.05;
+writeInterval   0.523;
+//writeInterval   0.1;
 
 purgeWrite      0;
 
@@ -58,6 +59,72 @@ maxCo           2.5;
 
 // maxDeltaT
 maxDeltaT       1;
+
+functions (
+    fixU {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName U;
+        expression "vector(0,-2.22807940121596,0)";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+    fixT {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName T;
+        expression "0.208502188361161";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+    fix_h {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName h;
+        expression "0.595720538174745";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+    perturb_rho {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName rho;
+        expression "(0.177142857142857+1e-4*cos(-3.002224774913017*time()+1.570796326794897*pos().x-1.347449634548289*pos().y))";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+    perturb_p {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName p;
+        expression "rho*0.148930134543686";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+    perturb_rhoU {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName rhoU;
+        expression "rho*vector(0,-2.22807940121596,0)";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+    perturb_rhoE {
+        type manipulateField;
+        outputControl timeStep;
+        outputInterval 1;
+        fieldName rhoE;
+        expression "rho*3.077889447236182-p";
+        mask "pos().y>1.1";
+        manipulateAtStartup true;
+    }
+);
 
 
 // ************************************************************************* //

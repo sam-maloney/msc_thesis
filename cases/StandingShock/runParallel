@@ -1,3 +1,0 @@
-#!/bin/bash
-decomposePar -force
-mpirun -np 8 dbnsFoam -parallel > log

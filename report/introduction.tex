@@ -19,20 +19,20 @@ The time evolution of the dynamics of fluids can be described by systems of bala
 \begin{align}
 \frac{\partial{\rho}}{\partial{t}} &+ \nabla \cdot (\rho \mathbf{v}) = 0, \label{eq:eulerContinuity} \\
 \frac{\partial{\rho \mathbf{v}}}{\partial{t}} &+ \nabla \cdot (\mathbf{v} \rho \mathbf{v}) + \nabla p = -\rho \nabla \phi, \label{eq:eulerMomentum} \\
-\frac{\partial{E}}{\partial{t}} &+ \nabla \cdot \left[(E+p)\mathbf{v}\right] = -\rho \mathbf{v} \cdot \nabla \phi,  \label{eq:eulerEnergy} 
+\frac{\partial{E}}{\partial{t}} &+ \nabla \cdot \left[(E+p)\mathbf{v}\right] = -\rho \mathbf{v} \cdot \nabla \phi, \label{eq:eulerEnergy} 
 \end{align}
 \end{subequations}
 where $\rho$ is the mass density, and $\mathbf{v}$ is the local velocity vector. $E$ is the total energy sum of the internal and kinetic energies given as
 \begin{equation} \label{eq:totalEnergy}
 E=\rho e + \frac{\rho v^2}{2}.
 \end{equation}
-An equation of state $p=p(\rho,e)$ must be selected for a given problem to complete the relations between these primitive quanitites. The quantitiy $\phi$ on the right-hand side of the latter two equations represents a potential field, such as gravity, which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given function, through pre-computation, or by solving for it independently of the other fluid quantities at each time step.
+An equation of state $p=p(\rho,e)$ must be selected for a given problem to complete the relations between these primitive quantities. The quantity $\phi$ on the right-hand side of the latter two equations represents a potential field, such as gravity, which acts upon the fluid. For our purposes, this potential is assumed to be known, either as a given function, through pre-computation, or by solving for it independently of the other fluid quantities at each time step.
 
 The Euler system of equations can be rewritten in the condensed form of a general balance law as
 \begin{equation} \label{eq:euler}
 \mathbf{U}_t+\nabla\cdot(\mathbf{F}(\mathbf{U}))=\mathbf{S}(\mathbf{U}),
 \end{equation}
-where $\mathbf{U}$ is a vector of the conserved quantities, and the vectors $\mathbf{F}$ and $\mathbf{S}$ represent the fluxes and sources of these quanitities in the system.
+where $\mathbf{U}$ is a vector of the conserved quantities, and the vectors $\mathbf{F}$ and $\mathbf{S}$ represent the fluxes and sources of these quantities in the system.
 
 \subsection{Steady States}
 
@@ -65,7 +65,7 @@ Starting in one dimension for simplicity, the Euler equations in the balance law
 \begin{equation} \label{eq:euler1D}
 \frac{\partial \mathbf{U}}{\partial t}+\frac{\partial \mathbf{F}}{\partial x}=\mathbf{S},
 \end{equation}
-where the vectors of conserved quanitities, and their fluxes and sources, are respectively defined as
+where the vectors of conserved quantities, and their fluxes and sources, are respectively defined as
 \begin{equation}
 \mathbf{U}=
 \begin{bmatrix}
@@ -127,7 +127,7 @@ where $K=K(s)$ is only a function of the entropy $s$, and so is constant for ise
 \end{equation}
 where the continuity equation~\eqref{eq:eulerContinuity} for a steady state shows that the mass flux $m=\rho v_x$ is also constant.
 
-All of the constant values in~\eqref{eq:bernoulli} can be computed for a given cell $i$ and timestep $n$ using the stored cell-centred values, and then the the value of $\rho(x)$ throughout the cell can be directly tied to the known variation in $\phi(x)$ as
+All of the constant values in~\eqref{eq:bernoulli} can be computed for a given cell $i$ and timestep $n$ using the stored cell-centred values, and then the value of $\rho(x)$ throughout the cell can be directly tied to the known variation in $\phi(x)$ as
 \begin{equation} \label{eq:equilibRecon}
 \frac{1}{2}\left(\frac{m_i^n}{\rho_{0,i}^n(x)}\right)^2+\frac{\gamma}{\gamma-1}K_i^n\rho_{0,i}^n(x)^{\gamma-1}+\phi(x)=b_i^n.
 \end{equation}
@@ -145,7 +145,7 @@ f'(\rho_{0,i,\alpha}^n)=-\frac{(m_i^n)^2}{\left(\rho_{0,i,\alpha}^n\right)^3}+\g
 \end{equation}
 A stopping criterion $\left|\rho_{0,i,\alpha+1}^n-\rho_{0,i,\alpha}^n\right|<\epsilon$ for some given tolerance $\epsilon$ is used to determine convergence of the iterations to a solution for $\rho_{0,i}^n$ of arbitrary accuracy at the desired point, limited only by the machine precision. The computational cost intrinsic to such an iterative solution can be mitigated by using the known cell-centre value as the starting guess $\rho_{\alpha=0}$ which should already be quite close to the final solution at the neighbouring cell interfaces in most instances.
 
-This computaton gives the extrapolated values that $\rho(x)$ would have in the area around the $i\textrm{-th}$ cell for a steady state flow, and so is termed the equilibrium value and denoted with a `$0$' subscript. If the potential $\phi(x)$ is a known function, then this allows $\rho_0(x)$ to be computed everywhere in the cell neighbourhood; however, if $\phi(x)$ is also given only discretely at the cell centres, perhaps becuase it is itself computed numerically in a separate calculation, then it must be interpolated to the desired reconstruction points (i.e.\ the cell faces) in order to compute $\rho_0$ there. A second order accurate piece-wise linear interpolation is generally sufficient, provided the underlying $\phi(x)$ is a continuous function.
+This computation gives the extrapolated values that $\rho(x)$ would have in the area around the $i\textrm{-th}$ cell for a steady state flow, and so is termed the equilibrium value and denoted with a `$0$' subscript. If the potential $\phi(x)$ is a known function, then this allows $\rho_0(x)$ to be computed everywhere in the cell neighbourhood; however, if $\phi(x)$ is also given only discretely at the cell centres, perhaps because it is itself computed numerically in a separate calculation, then it must be interpolated to the desired reconstruction points (i.e.\ the cell faces) in order to compute $\rho_0$ there. A second order accurate piece-wise linear interpolation is generally sufficient, provided the underlying $\phi(x)$ is a continuous function.
 
 Equilibrium reconstruction values for the primitive variables can then be obtained from the computed $\rho_{0,i}^n$, giving
 \begin{equation} \label{eq:primitives1D1}
@@ -300,7 +300,7 @@ Having $\beta_4=1$ ensures that such a scheme is consistent, and having $\beta_3
 \subsection{Multiple Spatial Dimensions}
 \label{subsec:multiDim}
 
-Extending the method to multiple spatial dimensions is accomplished via a relatively straightforward application of the preceding 1D approach along each additional dimension. It is summarized here for 2D but would progress analgously for 3D cases.
+Extending the method to multiple spatial dimensions is accomplished via a relatively straightforward application of the preceding 1D approach along each additional dimension. It is summarized here for 2D but would progress analogously for 3D cases.
 
 The 1D Euler equation~\eqref{eq:euler1D} is expanded to 2D as
 \begin{equation} \label{eq:euler2D}
@@ -330,9 +330,9 @@ where the conserved quantities, fluxes, and source terms are now given by the fo
 \end{bmatrix} \frac{\partial \phi}{\partial y},
 \end{split}
 \end{align}
-and $\mathbf{w}=[p,\ v_x,\  v_y,\ T]^T$ is the vector of primitive values.
+and $\mathbf{w}=[p,\ v_x,\ v_y,\ T]^T$ is the vector of primitive values.
 
-Analgously to the 1D case, one starts by computing the equilibrium constants $b_i^n$, $K_i^n$, and $m_i^n$ at the cell centres and using those to extrapolate the local subcell equilibrium to the cell faces based on the changes in the potential $\phi(x,y)$ from the cell centres to the faces. If $\phi(x,y)$ is known only discretely, then a bilinear interpolation will now be needed to determine its value at the cell faces. The first-order primitive vector of inputs to the Riemann solver are then
+Analogously to the 1D case, one starts by computing the equilibrium constants $b_i^n$, $K_i^n$, and $m_i^n$ at the cell centres and using those to extrapolate the local subcell equilibrium to the cell faces based on the changes in the potential $\phi(x,y)$ from the cell centres to the faces. If $\phi(x,y)$ is known only discretely, then a bilinear interpolation will now be needed to determine its value at the cell faces. The first-order primitive vector of inputs to the Riemann solver are then
 \begin{equation} \label{eq:primitives2D1}
 \mathbf{w}_{i\mp1/2\pm,j}^n=
 \begin{bmatrix}
@@ -366,7 +366,7 @@ S_{x,E,i,j}^n=-\rho v_{x,i,j}^n\frac{\phi_{i+1,j}-\phi_{i-1,j}}{2\Delta x} \quad
 \end{equation}
 These source discretizations are again second-order accurate as in the 1D case, and combined with~\eqref{eq:primitives2D1} they give a scheme which is precisely equilibrium preserving but only first-order accurate for modelling deviations from the steady state.
 
-This can then be improved to second-order by proceeding dimension-by-dimension as in the 1D case and computing the differences between the local equilibrium reconstruction evaluated at the neighbouring cell centres and the solution values there, to create a local subcell reconstruction of the perturbations using a gradient-limited linear approximation. This leads to the following second-order accurate primitve vectors
+This can then be improved to second-order by proceeding dimension-by-dimension as in the 1D case and computing the differences between the local equilibrium reconstruction evaluated at the neighbouring cell centres and the solution values there, to create a local subcell reconstruction of the perturbations using a gradient-limited linear approximation. This leads to the following second-order accurate primitive vectors
 \begin{align} \label{eq:primitives2D2}
 \begin{split}
 \mathbf{w}_{i\mp1/2\pm,j}^n&=

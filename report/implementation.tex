@@ -17,7 +17,7 @@ The Venkatakrishnan limiter was chosen for its applicability to steady state flo
 \subsection{Computational Time}
 \label{subsec:timing}
 
-As iterative Newton-Raphson solutions are required by the balanced scheme, this is expected to make it more computationally expensive than the standard methods for a given grid resolution. While the exact difference in compuational cost will depend on the memory requirements and set-up of the problem being simulated, a couple of CPU times are presented in Table~\ref{table:timing} for representative simulations in 1D, 2D, and 3D, to give an idea of the observed computational cost. These timings include initialization time and writing of final result files so they are only intended as a rough initial comparison between the unbalanced and well-balanced schemes.
+As iterative Newton-Raphson solutions are required by the balanced scheme, this is expected to make it more computationally expensive than the standard methods for a given grid resolution. While the exact difference in computational cost will depend on the memory requirements and set-up of the problem being simulated, a couple of CPU times are presented in Table~\ref{table:timing} for representative simulations in 1D, 2D, and 3D, to give an idea of the observed computational cost. These timings include initialization time and writing of final result files, so they are only intended as a rough initial comparison between the unbalanced and well-balanced schemes.
 
 \begin{table*}\centering
 \caption{Computational times for sample problems in various dimensions comparing the second-order unbalanced and well-balanced schemes.}
@@ -44,16 +44,16 @@ An order verification study (OVS) was carried out to verify that the implementat
 \begin{equation}
 \phi(x)=
 \begin{dcases} 
-      0, & x\leq -1.5 \\
-      \frac{2}{81}x^5+\frac{5}{27}x^3+\frac{5}{8}x+\frac{1}{2}, & -1.5<x<1.5 \\
-      1, & x\geq 1.5
+0, & x\leq -1.5 \\
+\frac{2}{81}x^5+\frac{5}{27}x^3+\frac{5}{8}x+\frac{1}{2}, & -1.5<x<1.5 \\
+1, & x\geq 1.5
 \end{dcases}.
 \end{equation}
 The constant regions at the domain edges allowed for simple zero-gradient boundary conditions to be used for all non-fixed primitives, and the quintic coefficients were chosen to match also the first and second derivatives (to zero) at the transition points to the constant regions.
 
 The inlet of the flow was set using Dirichlet boundary conditions on $T$ and $v_x$ at $x=2$ with the values set to the same as those used for the inlet of sub-problem 1 described in Section~\ref{sec:TP_set_up} (see there for a more detailed description of how these values are determined). To briefly summarize here, at the inlet one has $p=0.75, T=1.05,$ and $v_x=-\sqrt{31/199}\approx-0.39$, with adiabatic constant $\gamma=4/3$ and units such that $c=\rho=1$. The inlet condition for the pressure is set to zero-gradient at the inlet, as having both it and the velocity fixed caused spurious error in some test cases and was recommended against in the OpenFOAM documentation. At the outlet, all primitives were given homogenous Neumann boundary conditions.
 
-For the initial conditions in the rest of the domain, the value of the density $\rho(x)$ for an  equilibrium flow was calculated, and then superimposed with a Gaussian perturbation centred at $x=0$, given by
+For the initial conditions in the rest of the domain, the value of the density $\rho(x)$ for an equilibrium flow was calculated, and then superimposed with a Gaussian perturbation centred at $x=0$, given by
 \begin{equation}
 \Delta \rho(x)=\frac{A}{2\sigma \sqrt{2 \pi}}\ \textrm{exp}\left[-\frac{1}{2}\left(\frac{x}{\sigma}\right)^2\right].
 \end{equation}
@@ -78,7 +78,7 @@ All convergence simulations were run to a final time of $t=1$, which was suffici
 
 \subsection{Equilibrium Flow}
 
-The results of the first series of simulations at equilibrium, i.e.\ with $A=0$, are tabulated in Table~\ref{table:OVS_A0} and demonstrate very close agreement to the expected first- and second-order accuracy for the unbalanced schemes. For the well-balanced schemes, the average error is at the level of the machine precision for all grid resolutions, demonstrating the precise maintenence of the equilibrium flow irrespective of the number and size of the grid cells. This serves as a strong empirical verification of the precise matching between the source and flux term discretizations in the~\eqref{eq:balance} balance law for steady states, i.e.\ it truly is ``well-balanced''.
+The results of the first series of simulations at equilibrium, i.e.\ with $A=0$, are tabulated in Table~\ref{table:OVS_A0} and demonstrate very close agreement to the expected first- and second-order accuracy for the unbalanced schemes. For the well-balanced schemes, the average error is at the level of the machine precision for all grid resolutions, demonstrating the precise maintenance of the equilibrium flow irrespective of the number and size of the grid cells. This serves as a strong empirical verification of the precise matching between the source and flux term discretizations in the~\eqref{eq:balance} balance law for steady states, i.e.\ it truly is ``well-balanced''.
 
 \begin{table*}\centering
 \caption{L1 error of the density and intra-step order of accuracy for the first- and second-order unbalanced/well-balanced schemes with no perturbation, i.e.\ $A=0$.}
@@ -260,7 +260,7 @@ The polytrope was simulated over a spherical domain of radius $r=0.5$ centred at
 \begin {figure}
 \centering
 \includegraphics[width=13cm]{figures/sphere_meshes}
-\caption {Illustrations of the two coarsest meshes generated on a 3D sphere of radius $r=0.5$ centred at the origin, showing the unstructured tetrahedal mesh and its refinement.}
+\caption {Illustrations of the two coarsest meshes generated on a 3D sphere of radius $r=0.5$ centred at the origin, showing the unstructured tetrahedral mesh and its refinement.}
 \label{fig:sphere_meshes}
 \end{figure}
 
@@ -273,7 +273,7 @@ Measuring the spatial order of accuracy for an unstructured mesh is a much more 
 \ra{1.3}
 \label{table:polytrope}
 \begin{tabular}{@{}rlccccc@{}}\toprule
-&& \multicolumn{2}{c}{First} &  & \multicolumn{2}{c}{Second}\\
+&& \multicolumn{2}{c}{First} & & \multicolumn{2}{c}{Second}\\
 \cmidrule{3-4} \cmidrule{6-7}
 $N$ & \phantom{al}$h$ & $Err_1$ & Order && $Err_1$ & Order\\ \midrule
 $4144$ & 0.585\phantom{a} & 8.17e-03/1.23e-15 &&& 4.22e-04/1.31e-15 &\\
